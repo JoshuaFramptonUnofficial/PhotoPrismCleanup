@@ -1,0 +1,13 @@
+C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net6.0-windows\PhotoPrismCleanup.csproj.AssemblyReference.cache
+C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net6.0-windows\MainWindow.baml
+C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net6.0-windows\SummaryWindow.baml
+C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net6.0-windows\App.baml
+C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net6.0-windows\MainWindow.g.cs
+C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net6.0-windows\SummaryWindow.g.cs
+C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net6.0-windows\App.g.cs
+C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net6.0-windows\PhotoPrismCleanup_MarkupCompile.cache
+C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net6.0-windows\PhotoPrismCleanup.g.resources
+C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net6.0-windows\PhotoPrismCleanup.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net6.0-windows\PhotoPrismCleanup.AssemblyInfoInputs.cache
+C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net6.0-windows\PhotoPrismCleanup.AssemblyInfo.cs
+C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net6.0-windows\PhotoPrismCleanup.csproj.CoreCompileInputs.cache
