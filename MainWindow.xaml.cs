@@ -1,5 +1,6 @@
-﻿using Microsoft.Win32;
-using Renci.SshNet.Common;
+﻿using Microsoft.Win32;               // for WPF OpenFileDialog
+using Renci.SshNet.Common;           // for SftpPathNotFoundException
+using SysForms = System.Windows.Forms; // alias for WinForms dialog
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -28,7 +29,7 @@ namespace PhotoPrismCleanup
             InitializeComponent();
             _currentTempVideo = null;
 
-            // Load config into UI
+            // Load config
             _cfg = ConfigService.Load();
             HostBox.Text = _cfg.Host;
             PortBox.Text = _cfg.Port.ToString();
@@ -41,11 +42,8 @@ namespace PhotoPrismCleanup
             ShowPhotosBox.IsChecked = _cfg.ShowPhotos;
             ShowVideosBox.IsChecked = _cfg.ShowVideos;
 
-            // Theme toggle
-            bool isDark = _cfg.Theme == ThemeMode.Dark
-                       || (_cfg.Theme == ThemeMode.System && SystemParameters.HighContrast);
-            ThemeToggle.IsChecked = isDark;
-            ThemeIcon.Text = isDark ? "🌜" : "🌞";
+            // Theme toggle initial state
+            ThemeToggle.IsChecked = _cfg.Theme == ThemeMode.Dark;
             ApplyTheme();
 
             _svc = new PhotoPrismService(
@@ -57,40 +55,41 @@ namespace PhotoPrismCleanup
         {
             var dicts = Application.Current.Resources.MergedDictionaries;
             dicts.Clear();
-            if (ThemeToggle.IsChecked == true)
-                dicts.Add(new ResourceDictionary { Source = new Uri("Themes/DarkTheme.xaml", UriKind.Relative) });
-            else
-                dicts.Add(new ResourceDictionary { Source = new Uri("Themes/LightTheme.xaml", UriKind.Relative) });
+            var themeFile = _cfg.Theme == ThemeMode.Dark
+                ? "Themes/DarkTheme.xaml"
+                : "Themes/LightTheme.xaml";
+            dicts.Add(new ResourceDictionary
+            {
+                Source = new Uri(themeFile, UriKind.Relative)
+            });
         }
 
-        private void ThemeToggle_Checked(object s, RoutedEventArgs e)
+        private void ThemeToggle_Checked(object sender, RoutedEventArgs e)
         {
             try
             {
                 _cfg.Theme = ThemeMode.Dark;
-                ApplyTheme();
-                ThemeIcon.Text = "🌜";
                 ConfigService.Save(_cfg);
+                ApplyTheme();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to switch theme:\n{ex.Message}",
+                MessageBox.Show($"Failed to switch to dark mode:\n{ex.Message}",
                                 "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private void ThemeToggle_Unchecked(object s, RoutedEventArgs e)
+        private void ThemeToggle_Unchecked(object sender, RoutedEventArgs e)
         {
             try
             {
                 _cfg.Theme = ThemeMode.Light;
-                ApplyTheme();
-                ThemeIcon.Text = "🌞";
                 ConfigService.Save(_cfg);
+                ApplyTheme();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to switch theme:\n{ex.Message}",
+                MessageBox.Show($"Failed to switch to light mode:\n{ex.Message}",
                                 "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -99,9 +98,12 @@ namespace PhotoPrismCleanup
         {
             try
             {
-                string path = System.IO.Path.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory, "help.html");
-                Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+                string path = Path.Combine(
+                  AppDomain.CurrentDomain.BaseDirectory, "help.html");
+                Process.Start(new ProcessStartInfo(path)
+                {
+                    UseShellExecute = true
+                });
             }
             catch (Exception ex)
             {
@@ -113,12 +115,14 @@ namespace PhotoPrismCleanup
         private void BuildFilteredList()
         {
             _mediaList = _allMedia
-              .Where(p =>
-              {
-                  var ext = System.IO.Path.GetExtension(p).ToLowerInvariant();
-                  bool isImg = Array.Exists(PhotoPrismService.ImageExts, e => e == ext);
-                  bool isVid = Array.Exists(PhotoPrismService.VideoExts, e => e == ext);
-                  return (isImg && _cfg.ShowPhotos) || (isVid && _cfg.ShowVideos);
+              .Where(p => {
+                  var ext = Path.GetExtension(p).ToLowerInvariant();
+                  bool isImg = Array.Exists(
+                    PhotoPrismService.ImageExts, e => e == ext);
+                  bool isVid = Array.Exists(
+                    PhotoPrismService.VideoExts, e => e == ext);
+                  return (isImg && _cfg.ShowPhotos)
+                      || (isVid && _cfg.ShowVideos);
               })
               .ToList();
         }
@@ -127,13 +131,14 @@ namespace PhotoPrismCleanup
         {
             try
             {
-                // Save login info
+                // Save login settings
                 _cfg.Host = HostBox.Text.Trim();
                 _cfg.Port = int.TryParse(PortBox.Text, out var p) ? p : 22;
                 _cfg.Username = UserBox.Text.Trim();
                 _cfg.UseKey = UseKeyBox.IsChecked == true;
                 _cfg.KeyPath = KeyBox.Text.Trim();
                 _cfg.PasswordOrKey = _cfg.UseKey ? "" : PwdBox.Password;
+                _cfg.RemoteFolder = FolderBox.Text.Trim();
                 ConfigService.Save(_cfg);
 
                 StatusText.Text = "Connecting…";
@@ -144,6 +149,7 @@ namespace PhotoPrismCleanup
 
                 _allMedia = await Task.Run(() => _svc.ListAllMedia());
                 BuildFilteredList();
+
                 if (_mediaList.Count == 0)
                 {
                     MessageBox.Show("No media found.", "Empty",
@@ -159,12 +165,12 @@ namespace PhotoPrismCleanup
             }
             catch (SocketException)
             {
-                MessageBox.Show("Cannot reach host. Check network/SSH settings.",
+                MessageBox.Show("Cannot reach host.\nCheck network/SSH settings.",
                                 "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (SftpPathNotFoundException)
             {
-                MessageBox.Show("Remote folder not found. Check path.",
+                MessageBox.Show("Remote folder not found.\nCheck the path.",
                                 "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception ex)
@@ -191,11 +197,13 @@ namespace PhotoPrismCleanup
                 }
 
                 string path = _mediaList[_index];
-                string ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
+                string ext = Path.GetExtension(path).ToLowerInvariant();
 
-                if (Array.Exists(PhotoPrismService.ImageExts, e => e == ext))
+                if (Array.Exists(
+                    PhotoPrismService.ImageExts, e => e == ext))
                 {
-                    var data = await Task.Run(() => _svc.DownloadToMemory(path));
+                    var data = await Task.Run(
+                      () => _svc.DownloadToMemory(path));
                     var bmp = new BitmapImage();
                     bmp.BeginInit();
                     bmp.CacheOption = BitmapCacheOption.OnLoad;
@@ -208,8 +216,8 @@ namespace PhotoPrismCleanup
                 }
                 else
                 {
-                    string tmp = System.IO.Path.Combine(
-                        Path.GetTempPath(), Guid.NewGuid() + ext);
+                    string tmp = Path.Combine(
+                      Path.GetTempPath(), Guid.NewGuid() + ext);
                     await Task.Run(() => _svc.DownloadToFile(path, tmp));
                     _currentTempVideo = tmp;
                     VideoPlayer.Source = new Uri(tmp);
@@ -264,12 +272,19 @@ namespace PhotoPrismCleanup
             }
         }
 
-        private void DelBtn_Click(object s, RoutedEventArgs e) => _ = NavigateAsync(true);
-        private void KeepBtn_Click(object s, RoutedEventArgs e) => _ = NavigateAsync(false);
+        private void DelBtn_Click(object s, RoutedEventArgs e)
+            => _ = NavigateAsync(true);
+
+        private void KeepBtn_Click(object s, RoutedEventArgs e)
+            => _ = NavigateAsync(false);
 
         private async void UndoBtn_Click(object s, RoutedEventArgs e)
         {
-            if (_index <= 0) { System.Media.SystemSounds.Beep.Play(); return; }
+            if (_index <= 0)
+            {
+                System.Media.SystemSounds.Beep.Play();
+                return;
+            }
             _index--;
             _toDelete.Remove(_mediaList[_index]);
             _cfg.LastIndex = _index;
@@ -277,7 +292,8 @@ namespace PhotoPrismCleanup
             await LoadCurrentAsync();
         }
 
-        private void Window_PreviewKeyDown(object s, KeyEventArgs e)
+        private void Window_PreviewKeyDown(
+          object s, System.Windows.Input.KeyEventArgs e)
         {
             if (MainTabs.Visibility == Visibility.Visible)
             {
@@ -314,8 +330,8 @@ namespace PhotoPrismCleanup
             try
             {
                 _svc.ClearThumbnailCache();
-                MessageBox.Show("Thumbnail cache cleared.", "OK",
-                                MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Thumbnail cache cleared.",
+                                "OK", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
@@ -334,13 +350,12 @@ namespace PhotoPrismCleanup
                     Multiselect = true,
                     Filter = "Media files|*.jpg;*.jpeg;*.png;*.gif;*.bmp;*.mp4;*.mov;*.avi;*.mkv;*.webm|All|*.*"
                 };
-                if (dlg.ShowDialog(this) == true)
+                if (dlg.ShowDialog() == true)
                 {
                     _svc.ImportFiles(dlg.FileNames);
-                    MessageBox.Show("Import complete.", "OK",
-                                    MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Import complete.",
+                                    "OK", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                    // refresh feed
                     _allMedia = _svc.ListAllMedia();
                     BuildFilteredList();
                     _index = Math.Min(_cfg.LastIndex, _mediaList.Count - 1);
@@ -359,8 +374,8 @@ namespace PhotoPrismCleanup
             try
             {
                 ConfigService.Save(_cfg);
-                MessageBox.Show("Progress saved.", "OK",
-                                MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Progress saved.",
+                                "OK", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
@@ -378,10 +393,9 @@ namespace PhotoPrismCleanup
                 _cfg.ShowPhotos = ShowPhotosBox.IsChecked == true;
                 _cfg.ShowVideos = ShowVideosBox.IsChecked == true;
                 ConfigService.Save(_cfg);
-                MessageBox.Show("Settings applied.", "OK",
-                                MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Settings applied.",
+                                "OK", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                // refresh feed
                 _allMedia = _svc.ListAllMedia();
                 BuildFilteredList();
                 _index = Math.Min(_cfg.LastIndex, _mediaList.Count - 1);
@@ -399,9 +413,11 @@ namespace PhotoPrismCleanup
             try
             {
                 string cfgPath = Path.Combine(
-                  Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                  "PhotoPrismCleanup", "config.json");
-                if (File.Exists(cfgPath)) File.Delete(cfgPath);
+                    Environment.GetFolderPath(
+                      Environment.SpecialFolder.LocalApplicationData),
+                    "PhotoPrismCleanup", "config.json");
+                if (File.Exists(cfgPath))
+                    File.Delete(cfgPath);
 
                 Process.Start(new ProcessStartInfo(
                     AppDomain.CurrentDomain.FriendlyName)
@@ -415,7 +431,8 @@ namespace PhotoPrismCleanup
             }
         }
 
-        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        protected override void OnClosing(
+          System.ComponentModel.CancelEventArgs e)
         {
             ConfigService.Save(_cfg);
             _svc.Dispose();

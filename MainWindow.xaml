@@ -7,8 +7,96 @@
         Foreground="{DynamicResource ControlForeground}"
         PreviewKeyDown="Window_PreviewKeyDown">
 
-    <!-- Define button styles for Delete and Keep -->
     <Window.Resources>
+        <!-- Easing for the switch animation -->
+        <CubicEase x:Key="SwitchEase" EasingMode="EaseOut"/>
+
+        <!-- Animated Sun/Moon Switch -->
+        <Style x:Key="SwitchToggleStyle" TargetType="ToggleButton">
+            <Setter Property="Width"  Value="60"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid>
+                            <!-- Track -->
+                            <Border x:Name="Track"
+                      CornerRadius="15"
+                      Background="LightGray"/>
+                            <!-- Thumb -->
+                            <Border x:Name="Thumb"
+                      Width="26" Height="26"
+                      CornerRadius="13"
+                      Background="White"
+                      HorizontalAlignment="Left"
+                      RenderTransformOrigin="0.5,0.5">
+                                <Border.RenderTransform>
+                                    <TranslateTransform x:Name="ThumbTransform"/>
+                                </Border.RenderTransform>
+                                <ContentPresenter x:Name="IconPresenter"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"/>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <!-- Checked = Dark mode -->
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Track" Property="Background" Value="#0047AB"/>
+                                <Setter TargetName="IconPresenter" Property="Content" Value="🌜"/>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <!-- Slide thumb right -->
+                                            <DoubleAnimation Storyboard.TargetName="ThumbTransform"
+                                       Storyboard.TargetProperty="X"
+                                       To="30"
+                                       Duration="0:0:0.3"
+                                       EasingFunction="{StaticResource SwitchEase}"/>
+                                            <!-- Rumble keyframes -->
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ThumbTransform"
+                                                     Storyboard.TargetProperty="X"
+                                                     BeginTime="0:0:0.3">
+                                                <SplineDoubleKeyFrame KeyTime="0:0:0" Value="33"/>
+                                                <SplineDoubleKeyFrame KeyTime="0:0:0.05" Value="27"/>
+                                                <SplineDoubleKeyFrame KeyTime="0:0:0.10" Value="30"/>
+                                            </DoubleAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                            </Trigger>
+
+                            <!-- Unchecked = Light mode -->
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter TargetName="Track" Property="Background" Value="#FFA500"/>
+                                <Setter TargetName="IconPresenter" Property="Content" Value="🌞"/>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <!-- Slide thumb left -->
+                                            <DoubleAnimation Storyboard.TargetName="ThumbTransform"
+                                       Storyboard.TargetProperty="X"
+                                       To="0"
+                                       Duration="0:0:0.3"
+                                       EasingFunction="{StaticResource SwitchEase}"/>
+                                            <!-- Rumble keyframes -->
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ThumbTransform"
+                                                     Storyboard.TargetProperty="X"
+                                                     BeginTime="0:0:0.3">
+                                                <SplineDoubleKeyFrame KeyTime="0:0:0" Value="-3"/>
+                                                <SplineDoubleKeyFrame KeyTime="0:0:0.05" Value="3"/>
+                                                <SplineDoubleKeyFrame KeyTime="0:0:0.10" Value="0"/>
+                                            </DoubleAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Delete and Keep button styles -->
         <Style x:Key="DeleteBtn" TargetType="Button">
             <Setter Property="Background" Value="Red"/>
             <Setter Property="Foreground" Value="White"/>
@@ -24,21 +112,21 @@
     </Window.Resources>
 
     <DockPanel>
-
         <!-- Top Toolbar -->
         <StackPanel DockPanel.Dock="Top"
                 Orientation="Horizontal"
                 Background="{DynamicResource ControlBackground}"
                 Height="32">
-            <Button x:Name="HelpBtn" Content="Help" Width="60" Margin="5,4"
+            <Button x:Name="HelpBtn"
+              Content="Help"
+              Width="60"
+              Margin="5,4"
               Click="HelpBtn_Click"/>
             <ToggleButton x:Name="ThemeToggle"
-                    Width="60" Margin="5,4"
+                    Style="{StaticResource SwitchToggleStyle}"
+                    Margin="5,4"
                     Checked="ThemeToggle_Checked"
-                    Unchecked="ThemeToggle_Unchecked">
-                <TextBlock x:Name="ThemeIcon" Text="🌞" FontSize="16" 
-                   HorizontalAlignment="Center"/>
-            </ToggleButton>
+                    Unchecked="ThemeToggle_Unchecked"/>
         </StackPanel>
 
         <!-- Status Bar -->
@@ -47,9 +135,9 @@
             <TextBlock x:Name="StatusText" Text="Not connected"/>
         </StatusBar>
 
-        <!-- Main Content Area -->
+        <!-- Main Content -->
         <Grid>
-            <!-- CONNECT PANEL -->
+            <!-- Connect Panel -->
             <Border x:Name="ConnectGrid"
               Margin="50,30"
               Padding="20"
@@ -88,21 +176,22 @@
                     <TextBlock Text="Password:" Grid.Row="5" Grid.Column="0" Margin="0,4"/>
                     <PasswordBox x:Name="PwdBox" Grid.Row="5" Grid.Column="1" Margin="5"/>
 
-                    <Button x:Name="ConnectBtn" Content="Connect"
+                    <Button x:Name="ConnectBtn"
+                  Content="Connect"
                   Grid.Row="6" Grid.ColumnSpan="2"
-                  Width="120" Margin="0,10,0,0"
+                  Width="120"
+                  Margin="0,10,0,0"
                   HorizontalAlignment="Center"
                   IsDefault="True"
                   Click="ConnectBtn_Click"/>
                 </Grid>
             </Border>
 
-            <!-- REVIEW & SETTINGS TABS -->
+            <!-- Review & Settings Tabs -->
             <TabControl x:Name="MainTabs"
                   Visibility="Collapsed"
-                  Background="{DynamicResource ControlBackground}"
-                  Margin="0">
-                <!-- REVIEW TAB -->
+                  Background="{DynamicResource ControlBackground}">
+                <!-- Review Tab -->
                 <TabItem Header="Review">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -116,7 +205,6 @@
                     BorderBrush="Gray"
                     BorderThickness="1">
                             <Grid>
-                                <!-- Media Display + Loading Overlay -->
                                 <Viewbox>
                                     <Grid>
                                         <Image x:Name="PhotoImg"
@@ -168,17 +256,15 @@
                     </Grid>
                 </TabItem>
 
-                <!-- SETTINGS TAB -->
+                <!-- Settings Tab -->
                 <TabItem Header="Settings">
                     <ScrollViewer>
                         <StackPanel Margin="10">
                             <TextBlock Text="Originals Folder:"/>
-                            <TextBox x:Name="FolderBox"
-                       Margin="0,0,0,10"/>
+                            <TextBox x:Name="FolderBox" Margin="0,0,0,10"/>
 
                             <TextBlock Text="Thumbnail-Cache Folder:"/>
-                            <TextBox x:Name="ThumbCacheBox"
-                       Margin="0,0,0,10"/>
+                            <TextBox x:Name="ThumbCacheBox" Margin="0,0,0,10"/>
 
                             <TextBlock Text="Show Media Types:" FontWeight="Bold"
                          Margin="0,10,0,4"/>
@@ -189,11 +275,9 @@
                         Content="Videos"
                         Margin="0,0,0,10"/>
 
-                            <WrapPanel HorizontalAlignment="Right"
-                        Margin="0,20,0,0">
+                            <WrapPanel HorizontalAlignment="Right" Margin="0,20,0,0">
                                 <Button Content="Save Progress"
-                        Width="110"
-                        Margin="0,0,5,0"
+                        Width="110" Margin="0,0,5,0"
                         Click="SaveProgress_Click"/>
                                 <Button Content="Save Settings"
                         Width="110"
