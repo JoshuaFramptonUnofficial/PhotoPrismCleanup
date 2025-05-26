@@ -37,7 +37,7 @@ namespace PhotoPrismCleanup
                 if (!Directory.Exists(ConfigDir)) Directory.CreateDirectory(ConfigDir);
                 if (File.Exists(ConfigFile))
                 {
-                    var json = File.ReadAllText(ConfigFile);
+                    string json = File.ReadAllText(ConfigFile);
                     return JsonSerializer.Deserialize<AppConfig>(json)
                            ?? new AppConfig();
                 }
@@ -55,7 +55,7 @@ namespace PhotoPrismCleanup
             try
             {
                 if (!Directory.Exists(ConfigDir)) Directory.CreateDirectory(ConfigDir);
-                var json = JsonSerializer.Serialize(cfg,
+                string json = JsonSerializer.Serialize(cfg,
                     new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(ConfigFile, json);
             }

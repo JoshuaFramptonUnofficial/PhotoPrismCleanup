@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,16 +22,13 @@ namespace PhotoPrismCleanup
             _files = files;
             _svc = svc;
 
-            // set button text
-            OK.Content = $"Delete {_files.Count} item{(_files.Count > 1 ? "s" : "")}";
             Lbl.Text = $"You selected {_files.Count} item{(_files.Count > 1 ? "s" : "")} for deletion.";
+            OK.Content = $"Delete {_files.Count} item{(_files.Count > 1 ? "s" : "")}";
 
-            // build preview items
             ThumbList.ItemsSource = files.Select(f =>
             {
-                string ext = Path.GetExtension(f).ToLowerInvariant();
-                bool isImage = PhotoPrismService.ImageExts.Contains(ext);
-                // fetch thumbnail into memory for preview
+                var ext = Path.GetExtension(f).ToLowerInvariant();
+                var isImg = PhotoPrismService.ImageExts.Contains(ext);
                 var data = _svc.DownloadToMemory(f);
                 var bmp = new BitmapImage();
                 bmp.BeginInit();
@@ -43,15 +41,11 @@ namespace PhotoPrismCleanup
                     Thumb = bmp,
                     PlayCommand = new RelayCommand(_ =>
                     {
-                        if (!isImage)
+                        if (!isImg)
                         {
-                            // open external player
-                            var tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ext);
+                            string tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ext);
                             File.WriteAllBytes(tmp, data);
-                            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(tmp)
-                            {
-                                UseShellExecute = true
-                            });
+                            Process.Start(new ProcessStartInfo(tmp) { UseShellExecute = true });
                         }
                     })
                 };
@@ -60,53 +54,59 @@ namespace PhotoPrismCleanup
 
         private async void OK_Click(object sender, RoutedEventArgs e)
         {
-            // optionally download all
-            if (DownloadBefore.IsChecked == true)
+            try
             {
-                var dlg = new System.Windows.Forms.FolderBrowserDialog { Description = "Select download folder" };
-                if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                if (DownloadBefore.IsChecked == true)
                 {
-                    foreach (var f in _files)
+                    var dlg = new System.Windows.Forms.FolderBrowserDialog
+                    { Description = "Select download folder" };
+                    if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                     {
-                        await Task.Run(() =>
+                        foreach (var f in _files)
                         {
                             var data = _svc.DownloadToMemory(f);
                             File.WriteAllBytes(Path.Combine(dlg.SelectedPath, Path.GetFileName(f)), data);
-                        });
+                        }
                     }
                 }
+
+                OK.IsEnabled = Cancel.IsEnabled = false;
+                OK.Content = "Deleting...";
+                var failed = await Task.Run(() => _svc.DeleteFiles(_files));
+                int succ = _files.Count - failed.Count;
+                string msg = failed.Count == 0
+                    ? $"Deleted {succ} item(s)."
+                    : $"Deleted {succ}, failed {failed.Count}:\n" +
+                      string.Join("\n", failed.Select(Path.GetFileName));
+
+                Lbl.Visibility = ThumbList.Visibility = DownloadBefore.Visibility =
+                Cancel.Visibility = OK.Visibility = Visibility.Collapsed;
+
+                ResultText.Text = msg;
+                ResultText.Visibility = CloseBtn.Visibility = Visibility.Visible;
+                _didDelete = true;
             }
-
-            OK.IsEnabled = Cancel.IsEnabled = false;
-            OK.Content = "Deleting...";
-            var failed = await Task.Run(() => _svc.DeleteFiles(_files));
-            int succ = _files.Count - failed.Count;
-            string msg = failed.Count == 0
-                ? $"Deleted {succ} item(s)."
-                : $"Deleted {succ}, failed {failed.Count}:\n" +
-                  string.Join("\n", failed.Select(Path.GetFileName));
-
-            Lbl.Visibility = ThumbList.Visibility = DownloadBefore.Visibility = Cancel.Visibility = OK.Visibility = Visibility.Collapsed;
-            ResultText.Text = msg;
-            ResultText.Visibility = CloseBtn.Visibility = Visibility.Visible;
-            _didDelete = true;
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Bulk delete error:\n{ex.Message}",
+                                "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
-        private void Cancel_Click(object sender, RoutedEventArgs e) => Close();
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
+        }
+
         private void Close_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = _didDelete;
             Close();
         }
-
-        protected override void OnClosed(EventArgs e)
-        {
-            if (!_didDelete) DialogResult = false;
-            base.OnClosed(e);
-        }
     }
 
-    // simple ICommand impl for PlayCommand
+    // Simple ICommand for preview play
     public class RelayCommand : ICommand
     {
         private readonly Action<object?> _exec;

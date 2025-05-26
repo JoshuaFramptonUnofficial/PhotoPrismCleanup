@@ -5,11 +5,5 @@
     <Compile Update="SummaryWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Themes\DarkTheme.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Themes\LightTheme.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
 </Project>

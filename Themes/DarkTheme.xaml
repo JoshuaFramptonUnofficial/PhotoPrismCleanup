@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- Dark brushes -->
-    <SolidColorBrush x:Key="WindowBackground" Color="#1E1E1E"/>
-    <SolidColorBrush x:Key="ControlBackground" Color="#2D2D30"/>
-    <SolidColorBrush x:Key="ControlForeground" Color="#CCCCCC"/>
+  <!-- Dark brushes -->
+  <SolidColorBrush x:Key="WindowBackground"   Color="#1E1E1E"/>
+  <SolidColorBrush x:Key="ControlBackground"  Color="#2D2D30"/>
+  <SolidColorBrush x:Key="ControlForeground"  Color="#CCCCCC"/>
 </ResourceDictionary>

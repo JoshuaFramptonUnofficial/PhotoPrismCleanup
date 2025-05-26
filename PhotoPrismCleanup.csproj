@@ -3,9 +3,16 @@
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net8.0-windows</TargetFramework>
 		<UseWPF>true</UseWPF>
+		<UseWindowsForms>true</UseWindowsForms>
+		<!-- <- enables System.Windows.Forms -->
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="SSH.NET" Version="2020.0.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="help.html">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 </Project>
