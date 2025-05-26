@@ -31,5 +31,14 @@
     <Style x:Key="DeleteBtn" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
       <Setter Property="Background" Value="#dc3545"/>
     </Style>
-  </Application.Resources>
+    <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+            <!-- these XAML files you’ll add next -->
+            <ResourceDictionary Source="Themes/LightTheme.xaml"
+                        x:Key="LightTheme" />
+            <ResourceDictionary Source="Themes/DarkTheme.xaml"
+                        x:Key="DarkTheme" />
+        </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+    </Application.Resources>
 </Application>

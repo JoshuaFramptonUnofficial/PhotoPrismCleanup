@@ -3,16 +3,36 @@
   "WorkspaceRootPath": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|c:\\users\\nerfw\\downloads\\photoprism app\\photoprismcleanup\\photoprismservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|solutionrelative:photoprismservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|c:\\users\\nerfw\\downloads\\photoprism app\\photoprismcleanup\\summarywindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|solutionrelative:summarywindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|c:\\users\\nerfw\\downloads\\photoprism app\\photoprismcleanup\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|solutionrelative:app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|c:\\users\\nerfw\\downloads\\photoprism app\\photoprismcleanup\\photoprismcleanup.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|solutionrelative:photoprismcleanup.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|c:\\users\\nerfw\\downloads\\photoprism app\\photoprismcleanup\\themes\\darktheme.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|solutionrelative:themes\\darktheme.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|c:\\users\\nerfw\\downloads\\photoprism app\\photoprismcleanup\\assemblyinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|solutionrelative:assemblyinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|c:\\users\\nerfw\\downloads\\photoprism app\\photoprismcleanup\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|c:\\users\\nerfw\\downloads\\photoprism app\\photoprismcleanup\\photoprismservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|solutionrelative:photoprismservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|c:\\users\\nerfw\\downloads\\photoprism app\\photoprismcleanup\\summarywindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|solutionrelative:summarywindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|c:\\users\\nerfw\\downloads\\photoprism app\\photoprismcleanup\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
@@ -23,12 +43,16 @@
       "RelativeMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|solutionrelative:configservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|c:\\users\\nerfw\\downloads\\photoprism app\\photoprismcleanup\\photoprismcleanup.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
-      "RelativeMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|solutionrelative:photoprismcleanup.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+      "AbsoluteMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|c:\\users\\nerfw\\downloads\\photoprism app\\photoprismcleanup\\themes\\darktheme.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|solutionrelative:themes\\darktheme.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|c:\\users\\nerfw\\downloads\\photoprism app\\photoprismcleanup\\summarywindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|solutionrelative:summarywindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|c:\\users\\nerfw\\downloads\\photoprism app\\photoprismcleanup\\themes\\lighttheme.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|solutionrelative:themes\\lighttheme.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|c:\\users\\nerfw\\downloads\\photoprism app\\photoprismcleanup\\photoprismcleanup.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{5C226B6E-553E-48CF-B584-F015C64B886E}|PhotoPrismCleanup.csproj|solutionrelative:photoprismcleanup.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
     }
   ],
   "DocumentGroupContainers": [
@@ -43,80 +67,108 @@
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "App.xaml",
+              "DocumentMoniker": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\App.xaml",
+              "RelativeDocumentMoniker": "App.xaml",
+              "ToolTip": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\App.xaml",
+              "RelativeToolTip": "App.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-05-26T12:59:03.323Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "DarkTheme.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\Themes\\DarkTheme.xaml.cs",
+              "RelativeDocumentMoniker": "Themes\\DarkTheme.xaml.cs",
+              "ToolTip": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\Themes\\DarkTheme.xaml.cs",
+              "RelativeToolTip": "Themes\\DarkTheme.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-26T13:00:41.17Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "PhotoPrismCleanup.csproj",
               "DocumentMoniker": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\PhotoPrismCleanup.csproj",
               "RelativeDocumentMoniker": "PhotoPrismCleanup.csproj",
               "ToolTip": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\PhotoPrismCleanup.csproj",
               "RelativeToolTip": "PhotoPrismCleanup.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAZAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
               "WhenOpened": "2025-05-22T23:37:46.071Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "SummaryWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\SummaryWindow.xaml",
-              "RelativeDocumentMoniker": "SummaryWindow.xaml",
-              "ToolTip": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\SummaryWindow.xaml",
-              "RelativeToolTip": "SummaryWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-05-22T22:58:18.445Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "ConfigService.cs",
-              "DocumentMoniker": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\ConfigService.cs",
-              "RelativeDocumentMoniker": "ConfigService.cs",
-              "ToolTip": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\ConfigService.cs",
-              "RelativeToolTip": "ConfigService.cs",
-              "ViewState": "AgIAAD4AAAAAAAAAAAAswEUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-22T23:23:55.217Z"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "PhotoPrismService.cs",
-              "DocumentMoniker": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\PhotoPrismService.cs",
-              "RelativeDocumentMoniker": "PhotoPrismService.cs",
-              "ToolTip": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\PhotoPrismService.cs",
-              "RelativeToolTip": "PhotoPrismService.cs",
-              "ViewState": "AgIAAD0AAAAAAAAAAAAmwEcAAAARAAAAAAAAAA==",
+              "Title": "SummaryWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\SummaryWindow.xaml.cs",
+              "RelativeDocumentMoniker": "SummaryWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\SummaryWindow.xaml.cs",
+              "RelativeToolTip": "SummaryWindow.xaml.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAAIwDQAAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-22T22:55:20.212Z",
+              "WhenOpened": "2025-05-26T13:01:53.187Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "MainWindow.xaml.cs",
               "ToolTip": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\MainWindow.xaml.cs",
               "RelativeToolTip": "MainWindow.xaml.cs",
-              "ViewState": "AgIAAAUBAAAAAAAAAAAqwAgBAAAaAAAAAAAAAA==",
+              "ViewState": "AgIAACEBAAAAAAAAAAAIwF0BAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-22T22:40:30.315Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "PhotoPrismCleanup",
-              "DocumentMoniker": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\PhotoPrismCleanup.csproj",
-              "RelativeDocumentMoniker": "PhotoPrismCleanup.csproj",
-              "ToolTip": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\PhotoPrismCleanup.csproj",
-              "RelativeToolTip": "PhotoPrismCleanup.csproj",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-05-22T23:37:47.745Z",
+              "DocumentIndex": 4,
+              "Title": "AssemblyInfo.cs",
+              "DocumentMoniker": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\AssemblyInfo.cs",
+              "RelativeDocumentMoniker": "AssemblyInfo.cs",
+              "ToolTip": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\AssemblyInfo.cs",
+              "RelativeToolTip": "AssemblyInfo.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-26T13:03:05.349Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
+              "Title": "PhotoPrismService.cs",
+              "DocumentMoniker": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\PhotoPrismService.cs",
+              "RelativeDocumentMoniker": "PhotoPrismService.cs",
+              "ToolTip": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\PhotoPrismService.cs",
+              "RelativeToolTip": "PhotoPrismService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACQAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-22T22:55:20.212Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "SummaryWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\SummaryWindow.xaml",
+              "RelativeDocumentMoniker": "SummaryWindow.xaml",
+              "ToolTip": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\SummaryWindow.xaml",
+              "RelativeToolTip": "SummaryWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-05-22T22:58:18.445Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\MainWindow.xaml",
               "RelativeDocumentMoniker": "MainWindow.xaml",
@@ -124,6 +176,55 @@
               "RelativeToolTip": "MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2025-05-22T22:40:33.877Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "ConfigService.cs",
+              "DocumentMoniker": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\ConfigService.cs",
+              "RelativeDocumentMoniker": "ConfigService.cs",
+              "ToolTip": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\ConfigService.cs",
+              "RelativeToolTip": "ConfigService.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAA7wBcAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-22T23:23:55.217Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "DarkTheme.xaml",
+              "DocumentMoniker": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\Themes\\DarkTheme.xaml",
+              "RelativeDocumentMoniker": "Themes\\DarkTheme.xaml",
+              "ToolTip": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\Themes\\DarkTheme.xaml",
+              "RelativeToolTip": "Themes\\DarkTheme.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-05-26T12:58:35.881Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "LightTheme.xaml",
+              "DocumentMoniker": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\Themes\\LightTheme.xaml",
+              "RelativeDocumentMoniker": "Themes\\LightTheme.xaml",
+              "ToolTip": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\Themes\\LightTheme.xaml",
+              "RelativeToolTip": "Themes\\LightTheme.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-05-26T12:58:16.76Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "PhotoPrismCleanup",
+              "DocumentMoniker": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\PhotoPrismCleanup.csproj",
+              "RelativeDocumentMoniker": "PhotoPrismCleanup.csproj",
+              "ToolTip": "C:\\Users\\nerfw\\Downloads\\Photoprism App\\PhotoPrismCleanup\\PhotoPrismCleanup.csproj",
+              "RelativeToolTip": "PhotoPrismCleanup.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-05-22T23:37:47.745Z",
               "EditorCaption": ""
             }
           ]

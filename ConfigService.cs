@@ -5,6 +5,8 @@ using System.Windows;
 
 namespace PhotoPrismCleanup
 {
+    public enum ThemeMode { Light, Dark, System }
+
     public class AppConfig
     {
         public string Host { get; set; } = "";
@@ -14,6 +16,10 @@ namespace PhotoPrismCleanup
         public bool UseKey { get; set; }
         public string KeyPath { get; set; } = "";
         public string RemoteFolder { get; set; } = "/opt/photoprism/originals";
+        public string ThumbCacheFolder { get; set; } = "/opt/photoprism/storage/cache/thumbnails";
+        public bool ShowPhotos { get; set; } = true;
+        public bool ShowVideos { get; set; } = true;
+        public ThemeMode Theme { get; set; } = ThemeMode.System;
         public int LastIndex { get; set; }
     }
 
@@ -28,9 +34,7 @@ namespace PhotoPrismCleanup
         {
             try
             {
-                if (!Directory.Exists(ConfigDir))
-                    Directory.CreateDirectory(ConfigDir);
-
+                if (!Directory.Exists(ConfigDir)) Directory.CreateDirectory(ConfigDir);
                 if (File.Exists(ConfigFile))
                 {
                     var json = File.ReadAllText(ConfigFile);
@@ -50,9 +54,7 @@ namespace PhotoPrismCleanup
         {
             try
             {
-                if (!Directory.Exists(ConfigDir))
-                    Directory.CreateDirectory(ConfigDir);
-
+                if (!Directory.Exists(ConfigDir)) Directory.CreateDirectory(ConfigDir);
                 var json = JsonSerializer.Serialize(cfg,
                     new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(ConfigFile, json);

@@ -1,8 +1,9 @@
 ﻿using Microsoft.Win32;
-using Renci.SshNet.Common;      // for SftpPathNotFoundException
+using Renci.SshNet.Common;   // for SftpPathNotFoundException
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -14,6 +15,7 @@ namespace PhotoPrismCleanup
     {
         private readonly AppConfig _cfg;
         private readonly PhotoPrismService _svc;
+        private List<string> _allMedia = new();
         private List<string> _mediaList = new();
         private readonly List<string> _toDelete = new();
         private int _index;
@@ -33,17 +35,56 @@ namespace PhotoPrismCleanup
             KeyBox.Text = _cfg.KeyPath;
             PwdBox.Password = _cfg.UseKey ? "" : _cfg.PasswordOrKey;
             FolderBox.Text = _cfg.RemoteFolder;
+            ThumbCacheBox.Text = _cfg.ThumbCacheFolder;
+            ShowPhotosBox.IsChecked = _cfg.ShowPhotos;
+            ShowVideosBox.IsChecked = _cfg.ShowVideos;
+            ThemeSystem.IsChecked = _cfg.Theme == ThemeMode.System;
+            ThemeLight.IsChecked = _cfg.Theme == ThemeMode.Light;
+            ThemeDark.IsChecked = _cfg.Theme == ThemeMode.Dark;
 
-            // adjust if your thumbnail-cache path differs
+            ApplyTheme();
             _svc = new PhotoPrismService(
                      _cfg.RemoteFolder,
-                     "/opt/photoprism/storage/cache/thumbnails"
+                     _cfg.ThumbCacheFolder
                    );
+        }
+
+        private void ApplyTheme()
+        {
+            // clear existing
+            var dicts = Application.Current.Resources.MergedDictionaries;
+            dicts.Clear();
+            if (_cfg.Theme == ThemeMode.Light)
+                dicts.Add(new ResourceDictionary { Source = new Uri("Themes/LightTheme.xaml", UriKind.Relative) });
+            else if (_cfg.Theme == ThemeMode.Dark)
+                dicts.Add(new ResourceDictionary { Source = new Uri("Themes/DarkTheme.xaml", UriKind.Relative) });
+            else
+                // system-default: let OS decide (no override)
+                dicts.Add(
+                  SystemParameters.HighContrast
+                    ? new ResourceDictionary { Source = new Uri("Themes/DarkTheme.xaml", UriKind.Relative) }
+                    : new ResourceDictionary { Source = new Uri("Themes/LightTheme.xaml", UriKind.Relative) }
+                );
+        }
+
+        private void BuildFilteredList()
+        {
+            // filter by user prefs
+            _mediaList = _allMedia
+              .Where(p =>
+              {
+                  var ext = Path.GetExtension(p).ToLowerInvariant();
+                  bool isImage = Array.Exists(PhotoPrismService.ImageExts, e => e == ext);
+                  bool isVideo = Array.Exists(PhotoPrismService.VideoExts, e => e == ext);
+                  return (isImage && _cfg.ShowPhotos)
+                      || (isVideo && _cfg.ShowVideos);
+              })
+              .ToList();
         }
 
         private async void ConnectBtn_Click(object sender, RoutedEventArgs e)
         {
-            // save SSH settings & folder
+            // save connect settings
             _cfg.Host = HostBox.Text.Trim();
             _cfg.Port = int.TryParse(PortBox.Text, out var p) ? p : 22;
             _cfg.Username = UserBox.Text.Trim();
@@ -58,10 +99,10 @@ namespace PhotoPrismCleanup
             {
                 await Task.Run(() =>
                     _svc.Connect(
-                        _cfg.Host, _cfg.Port, _cfg.Username,
-                        _cfg.UseKey ? "" : _cfg.PasswordOrKey,
-                        _cfg.UseKey, _cfg.KeyPath));
-                _mediaList = await Task.Run(() => _svc.ListAllMedia());
+                      _cfg.Host, _cfg.Port, _cfg.Username,
+                      _cfg.UseKey ? "" : _cfg.PasswordOrKey,
+                      _cfg.UseKey, _cfg.KeyPath));
+                _allMedia = await Task.Run(() => _svc.ListAllMedia());
             }
             catch (SftpPathNotFoundException)
             {
@@ -76,24 +117,31 @@ namespace PhotoPrismCleanup
                 return;
             }
 
-            if (_mediaList.Count == 0)
+            if (_allMedia.Count == 0)
             {
                 MessageBox.Show("No media found.", "Empty",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
-            // swap to Review/Settings UI
+            // show tabs
             ConnectGrid.Visibility = Visibility.Collapsed;
             MainTabs.Visibility = Visibility.Visible;
 
+            // build initial filtered list & position
+            BuildFilteredList();
             _index = Math.Min(_cfg.LastIndex, _mediaList.Count - 1);
             await LoadCurrentAsync();
         }
 
         private async Task LoadCurrentAsync()
         {
-            // clean up last video temp file
+            // show overlay
+            LoadingOverlay.Visibility = Visibility.Visible;
+            PhotoImg.Visibility = Visibility.Collapsed;
+            VideoPlayer.Visibility = Visibility.Collapsed;
+
+            // clear last temp
             if (_currentTempVideo != null)
             {
                 VideoPlayer.Stop();
@@ -102,15 +150,12 @@ namespace PhotoPrismCleanup
                 _currentTempVideo = null;
             }
 
+            // load
             string path = _mediaList[_index];
             string ext = Path.GetExtension(path).ToLowerInvariant();
 
-            PhotoImg.Visibility = Visibility.Collapsed;
-            VideoPlayer.Visibility = Visibility.Collapsed;
-
             if (Array.Exists(PhotoPrismService.ImageExts, e => e == ext))
             {
-                // image
                 var data = await Task.Run(() => _svc.DownloadToMemory(path));
                 var bmp = new BitmapImage();
                 bmp.BeginInit();
@@ -124,9 +169,7 @@ namespace PhotoPrismCleanup
             }
             else
             {
-                // video
-                string tmp = Path.Combine(
-                    Path.GetTempPath(), Guid.NewGuid() + ext);
+                string tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ext);
                 await Task.Run(() => _svc.DownloadToFile(path, tmp));
                 _currentTempVideo = tmp;
                 VideoPlayer.Source = new Uri(tmp);
@@ -134,15 +177,14 @@ namespace PhotoPrismCleanup
                 VideoPlayer.Play();
             }
 
+            LoadingOverlay.Visibility = Visibility.Collapsed;
             ProgressText.Text = $"Item {_index + 1} / {_mediaList.Count}";
             StatusText.Text = "Connected";
         }
 
         private async Task NavigateAsync(bool delete)
         {
-            if (delete)
-                _toDelete.Add(_mediaList[_index]);
-
+            if (delete) _toDelete.Add(_mediaList[_index]);
             _index++;
             _cfg.LastIndex = _index;
             ConfigService.Save(_cfg);
@@ -153,7 +195,11 @@ namespace PhotoPrismCleanup
                 bool? res = dlg.ShowDialog();
 
                 if (res == true)
-                    _mediaList = await Task.Run(() => _svc.ListAllMedia());
+                {
+                    // after delete, re-fetch and rebuild filtered list
+                    _allMedia = await Task.Run(() => _svc.ListAllMedia());
+                    BuildFilteredList();
+                }
 
                 _toDelete.Clear();
                 _index = 0;
@@ -171,11 +217,7 @@ namespace PhotoPrismCleanup
 
         private async void UndoBtn_Click(object s, RoutedEventArgs e)
         {
-            if (_index <= 0)
-            {
-                System.Media.SystemSounds.Beep.Play();
-                return;
-            }
+            if (_index <= 0) { System.Media.SystemSounds.Beep.Play(); return; }
             _index--;
             _toDelete.Remove(_mediaList[_index]);
             _cfg.LastIndex = _index;
@@ -187,17 +229,26 @@ namespace PhotoPrismCleanup
         {
             if (MainTabs.Visibility == Visibility.Visible)
             {
-                if (e.Key == Key.Left)
-                { e.Handled = true; _ = NavigateAsync(true); }
-                if (e.Key == Key.Right)
-                { e.Handled = true; _ = NavigateAsync(false); }
-                if (e.Key == Key.Z || e.Key == Key.Down)
+                if (e.Key == Key.Left) { e.Handled = true; _ = NavigateAsync(true); }
+                else if (e.Key == Key.Right) { e.Handled = true; _ = NavigateAsync(false); }
+                else if (e.Key == Key.Z || e.Key == Key.Down)
                 { e.Handled = true; UndoBtn_Click(s, null); }
             }
         }
 
-        private void BulkDeleteNow_Click(object s, RoutedEventArgs e)
-            => new SummaryWindow(_toDelete, _svc) { Owner = this }.ShowDialog();
+        private async void BulkDeleteNow_Click(object s, RoutedEventArgs e)
+        {
+            var dlg = new SummaryWindow(_toDelete, _svc) { Owner = this };
+            bool? res = dlg.ShowDialog();
+            if (res == true)
+            {
+                // refresh feed after bulk delete
+                _allMedia = await Task.Run(() => _svc.ListAllMedia());
+                BuildFilteredList();
+                _index = Math.Min(_cfg.LastIndex, _mediaList.Count - 1);
+                await LoadCurrentAsync();
+            }
+        }
 
         private void ClearCache_Click(object s, RoutedEventArgs e)
         {
@@ -229,6 +280,9 @@ namespace PhotoPrismCleanup
                     _svc.ImportFiles(dlg.FileNames);
                     MessageBox.Show("Import complete.", "OK",
                                     MessageBoxButton.OK, MessageBoxImage.Information);
+                    // after import, refresh feed
+                    _allMedia = _svc.ListAllMedia();
+                    BuildFilteredList();
                 }
                 catch (Exception ex)
                 {
@@ -238,11 +292,35 @@ namespace PhotoPrismCleanup
             }
         }
 
+        private void SaveProgress_Click(object s, RoutedEventArgs e)
+        {
+            ConfigService.Save(_cfg);
+            MessageBox.Show("Progress saved.", "OK",
+                            MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
         private void SaveSettings_Click(object s, RoutedEventArgs e)
         {
+            // gather settings
             _cfg.RemoteFolder = FolderBox.Text.Trim();
+            _cfg.ThumbCacheFolder = ThumbCacheBox.Text.Trim();
+            _cfg.ShowPhotos = ShowPhotosBox.IsChecked == true;
+            _cfg.ShowVideos = ShowVideosBox.IsChecked == true;
+            _cfg.Theme = ThemeLight.IsChecked == true
+                ? ThemeMode.Light
+                : ThemeDark.IsChecked == true
+                  ? ThemeMode.Dark
+                  : ThemeMode.System;
+
             ConfigService.Save(_cfg);
-            MessageBox.Show("Settings saved.", "OK",
+            ApplyTheme();
+
+            // refresh feed with new filters
+            _allMedia = _svc.ListAllMedia();
+            BuildFilteredList();
+            _index = Math.Min(_cfg.LastIndex, _mediaList.Count - 1);
+            _ = LoadCurrentAsync();
+            MessageBox.Show("Settings applied.", "OK",
                             MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
@@ -251,8 +329,7 @@ namespace PhotoPrismCleanup
             var cfgPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "PhotoPrismCleanup", "config.json");
-            if (File.Exists(cfgPath))
-                File.Delete(cfgPath);
+            if (File.Exists(cfgPath)) File.Delete(cfgPath);
 
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {
