@@ -10,14 +10,10 @@ C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windo
 C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\ImportPreviewWindow.baml
 C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\MainWindow.baml
 C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\SummaryWindow.baml
-C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\Themes\DarkTheme.baml
-C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\Themes\LightTheme.baml
-C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\VideoPreviewWindow.baml
 C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\App.baml
 C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\ImportPreviewWindow.g.cs
 C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\MainWindow.g.cs
 C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\SummaryWindow.g.cs
-C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\VideoPreviewWindow.g.cs
 C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\App.g.cs
 C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\PhotoPrismCleanup_MarkupCompile.cache
 C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\PhotoPrismCleanup.g.resources

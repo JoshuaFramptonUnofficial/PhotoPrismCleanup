@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PhotoPrismCleanup")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fc9e77357dfefe28f130b5010d3d5b35822580f2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b8a60de9b800021ae343d75e3657faed6b9f3491")]
 [assembly: System.Reflection.AssemblyProductAttribute("PhotoPrismCleanup")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PhotoPrismCleanup")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

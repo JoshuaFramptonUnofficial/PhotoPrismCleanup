@@ -3,34 +3,31 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="PhotoPrism Cleanup"
         Height="650" Width="900"
+        Icon="Icons/logo.ico"
         Background="{DynamicResource WindowBackground}"
         Foreground="{DynamicResource ControlForeground}"
         PreviewKeyDown="Window_PreviewKeyDown">
     <Window.Resources>
-        <!-- Circular emoji button -->
+        <!-- Theme toggle button style -->
         <Style x:Key="ThemeBtnStyle" TargetType="Button">
-            <Setter Property="Width" Value="32"/>
-            <Setter Property="Height" Value="32"/>
+            <Setter Property="Width"  Value="36"/>
+            <Setter Property="Height" Value="36"/>
             <Setter Property="FontSize" Value="16"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Margin" Value="5,8"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border CornerRadius="16"
-                    Background="{TemplateBinding Background}">
-                            <ContentPresenter 
-                HorizontalAlignment="Center" 
-                VerticalAlignment="Center"/>
+                        <Border CornerRadius="18" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
-
-        <!-- Delete / Keep buttons -->
+        <!-- Delete/Keep button styles -->
         <Style x:Key="DeleteBtn" TargetType="Button">
             <Setter Property="Background" Value="Red"/>
             <Setter Property="Foreground" Value="White"/>
@@ -47,195 +44,152 @@
 
     <DockPanel>
         <!-- Top toolbar -->
-        <StackPanel DockPanel.Dock="Top"
-                Orientation="Horizontal"
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal"
                 Background="{DynamicResource ControlBackground}"
-                Height="40"
-                VerticalAlignment="Center">
-            <Button x:Name="HelpBtn"
-              Content="Help"
-              Width="60"
-              Margin="5,8"
+                Height="40" VerticalAlignment="Center">
+            <Button x:Name="HelpBtn" Content="Help" Width="60" Margin="5"
               Click="HelpBtn_Click"/>
-            <Button x:Name="ThemeBtn"
-              Style="{StaticResource ThemeBtnStyle}"
+            <Button x:Name="ThemeBtn" Style="{StaticResource ThemeBtnStyle}"
               Click="ThemeBtn_Click"/>
         </StackPanel>
 
         <!-- Status bar -->
         <StatusBar DockPanel.Dock="Bottom"
                Background="{DynamicResource ControlBackground}">
-            <TextBlock x:Name="StatusText"
-                 Text="Not connected"/>
+            <TextBlock x:Name="StatusText" Text="Not connected" Margin="5,0"/>
         </StatusBar>
 
+        <!-- Overall swipe/Delete progress bar -->
+        <ProgressBar x:Name="DeleteProgressBar"
+                 DockPanel.Dock="Bottom"
+                 Height="8"
+                 Minimum="0"
+                 Maximum="1"
+                 Value="0"
+                 Visibility="Collapsed"/>
+
         <Grid>
-            <!-- Connect panel -->
+            <!-- Connection form -->
             <Border x:Name="ConnectGrid"
-              Margin="50,30"
-              Padding="20"
-              CornerRadius="8"
-              Background="{DynamicResource ControlBackground}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+              Background="{DynamicResource ControlBackground}"
+              CornerRadius="8" Padding="16" Margin="50">
+                <ScrollViewer>
+                    <StackPanel>
+                        <TextBlock Text="SSH Host:"/>
+                        <TextBox x:Name="HostBox"/>
 
-                    <TextBlock Text="Host:" Grid.Row="0" Grid.Column="0" Margin="0,4"/>
-                    <TextBox x:Name="HostBox" Grid.Row="0" Grid.Column="1" Margin="5"/>
+                        <TextBlock Text="SSH Port:" Margin="0,8,0,0"/>
+                        <TextBox x:Name="PortBox"/>
 
-                    <TextBlock Text="Port:" Grid.Row="1" Grid.Column="0" Margin="0,4"/>
-                    <TextBox x:Name="PortBox" Grid.Row="1" Grid.Column="1" Margin="5"/>
+                        <TextBlock Text="Username:" Margin="0,8,0,0"/>
+                        <TextBox x:Name="UserBox"/>
 
-                    <TextBlock Text="Username:" Grid.Row="2" Grid.Column="0" Margin="0,4"/>
-                    <TextBox x:Name="UserBox" Grid.Row="2" Grid.Column="1" Margin="5"/>
+                        <CheckBox x:Name="UseKeyBox" Content="Use SSH Key" Margin="0,8,0,0"/>
 
-                    <CheckBox x:Name="UseKeyBox"
-                    Content="Use Key Auth"
-                    Grid.Row="3" Grid.Column="1" Margin="5"/>
+                        <TextBlock Text="Key Path:" Margin="0,8,0,0"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox x:Name="KeyBox" Width="300"/>
+                            <Button Content="Browse..." Margin="5,0,0,0"
+                      Click="BrowseKey_Click"/>
+                        </StackPanel>
 
-                    <TextBlock Text="Key Path:" Grid.Row="4" Grid.Column="0" Margin="0,4"/>
-                    <TextBox x:Name="KeyBox" Grid.Row="4" Grid.Column="1" Margin="5"/>
+                        <TextBlock Text="Password:" Margin="0,8,0,0"/>
+                        <PasswordBox x:Name="PwdBox"/>
 
-                    <TextBlock Text="Password:" Grid.Row="5" Grid.Column="0" Margin="0,4"/>
-                    <PasswordBox x:Name="PwdBox" Grid.Row="5" Grid.Column="1" Margin="5"/>
+                        <TextBlock Text="Remote Folder:" Margin="0,8,0,0"/>
+                        <TextBox x:Name="FolderBox"/>
 
-                    <Button x:Name="ConnectBtn"
-                  Content="Connect"
-                  Grid.Row="6"
-                  Grid.ColumnSpan="2"
-                  Width="120"
-                  Margin="0,10,0,0"
-                  HorizontalAlignment="Center"
-                  IsDefault="True"
-                  Click="ConnectBtn_Click"/>
-                </Grid>
+                        <TextBlock Text="Thumbnail Cache Folder:" Margin="0,8,0,0"/>
+                        <TextBox x:Name="ThumbCacheBox"/>
+
+                        <TextBlock Text="Import Folder:" Margin="0,8,0,0"/>
+                        <TextBox x:Name="ImportFolderBox"/>
+
+                        <CheckBox x:Name="ShowPhotosBox" Content="Show Photos" Margin="0,8,0,0"/>
+                        <CheckBox x:Name="ShowVideosBox" Content="Show Videos"/>
+
+                        <Button x:Name="ConnectBtn" Content="Connect"
+                    Margin="0,16,0,0" Height="30"
+                    Click="ConnectBtn_Click"/>
+                    </StackPanel>
+                </ScrollViewer>
             </Border>
 
-            <!-- Review & Settings -->
-            <TabControl x:Name="MainTabs"
-                  Visibility="Collapsed"
+            <!-- Main tabs (hidden until connected) -->
+            <TabControl x:Name="MainTabs" Visibility="Collapsed"
                   Background="{DynamicResource ControlBackground}">
-                <!-- Review tab -->
+                <!-- REVIEW TAB -->
                 <TabItem Header="Review">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <Border Grid.Row="0"
-                    Margin="10"
-                    BorderBrush="Gray"
-                    BorderThickness="1">
+                        <!-- Media display -->
+                        <Border Grid.Row="0" Background="{DynamicResource ControlBackground}">
                             <Grid>
-                                <Viewbox>
-                                    <Grid>
-                                        <Image x:Name="PhotoImg"
-                           Stretch="Uniform"
+                                <Image x:Name="SwipeImage"
+                       Stretch="Uniform"
+                       Visibility="Collapsed"/>
+                                <MediaElement x:Name="SwipeVideo"
+                              Stretch="Uniform"
+                              LoadedBehavior="Manual"
+                              UnloadedBehavior="Stop"
+                              Visibility="Collapsed"/>
+                                <TextBlock x:Name="LoadingOverlay"
+                           Text="Loading..."
+                           FontSize="24"
+                           Foreground="White"
+                           Background="#80000000"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
                            Visibility="Collapsed"/>
-                                        <MediaElement x:Name="VideoPlayer"
-                                  LoadedBehavior="Manual"
-                                  UnloadedBehavior="Stop"
-                                  Visibility="Collapsed"/>
-                                    </Grid>
-                                </Viewbox>
-                                <Grid x:Name="LoadingOverlay"
-                      Background="#80000000"
-                      Visibility="Collapsed">
-                                    <StackPanel HorizontalAlignment="Center"
-                              VerticalAlignment="Center">
-                                        <ProgressBar IsIndeterminate="True"
-                                 Width="200" Height="20"/>
-                                        <TextBlock Text="Loading large file…"
-                               Foreground="White"
-                               HorizontalAlignment="Center"
-                               Margin="0,10,0,0"/>
-                                    </StackPanel>
-                                </Grid>
                             </Grid>
                         </Border>
 
-                        <StackPanel Grid.Row="1"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Center"
-                        Margin="0,5">
-                            <Button x:Name="DelBtn"
-                      Content="Delete"
-                      Style="{StaticResource DeleteBtn}"
-                      Click="DelBtn_Click"/>
-                            <Button x:Name="UndoBtn"
-                      Content="Undo (Z/↓)"
-                      Click="UndoBtn_Click"/>
-                            <Button x:Name="KeepBtn"
-                      Content="Keep"
-                      Style="{StaticResource KeepBtn}"
-                      Click="KeepBtn_Click"/>
-                        </StackPanel>
-
-                        <TextBlock Grid.Row="2"
-                       x:Name="ProgressText"
-                       HorizontalAlignment="Center"
-                       Margin="5"/>
+                        <!-- Swipe controls -->
+                        <WrapPanel Grid.Row="1" HorizontalAlignment="Center" Margin="10">
+                            <Button x:Name="DeleteBtn" Style="{StaticResource DeleteBtn}"
+                      Content="Delete" Click="DeleteBtn_Click"/>
+                            <Button x:Name="KeepBtn" Style="{StaticResource KeepBtn}"
+                      Content="Keep" Click="KeepBtn_Click"/>
+                            <Button x:Name="UndoBtn" Content="Undo" Click="UndoBtn_Click"/>
+                        </WrapPanel>
                     </Grid>
                 </TabItem>
 
-                <!-- Settings tab -->
+                <!-- SETTINGS TAB -->
                 <TabItem Header="Settings">
                     <ScrollViewer>
                         <StackPanel Margin="10">
-                            <TextBlock Text="Originals Folder:"/>
-                            <TextBox x:Name="FolderBox" Margin="0,0,0,10"/>
+                            <TextBlock Text="Remote Folder:"/>
+                            <TextBox x:Name="SettingsFolderBox"/>
 
-                            <TextBlock Text="Thumbnail-Cache Folder:"/>
-                            <TextBox x:Name="ThumbCacheBox" Margin="0,0,0,10"/>
+                            <TextBlock Text="Thumbnail Cache Folder:" Margin="0,8,0,0"/>
+                            <TextBox x:Name="SettingsThumbCacheBox"/>
 
-                            <TextBlock Text="Import Folder:"/>
-                            <TextBox x:Name="ImportFolderBox" Margin="0,0,0,10"/>
+                            <TextBlock Text="Import Folder:" Margin="0,8,0,0"/>
+                            <TextBox x:Name="SettingsImportFolderBox"/>
 
-                            <TextBlock Text="Show Media Types:" FontWeight="Bold"
-                         Margin="0,10,0,4"/>
-                            <CheckBox x:Name="ShowPhotosBox"
-                        Content="Photos"
-                        Margin="0,0,0,4"/>
-                            <CheckBox x:Name="ShowVideosBox"
-                        Content="Videos"
-                        Margin="0,0,0,10"/>
+                            <CheckBox x:Name="SettingsShowPhotosBox"
+                        Content="Show Photos" Margin="0,8,0,0"/>
+                            <CheckBox x:Name="SettingsShowVideosBox"
+                        Content="Show Videos"/>
 
-                            <WrapPanel HorizontalAlignment="Right"
-                        Margin="0,20,0,0">
-                                <Button Content="Save Progress"
-                        Width="110"
-                        Margin="0,0,0,5"
-                        Click="SaveProgress_Click"/>
+                            <WrapPanel Margin="0,16,0,0">
                                 <Button Content="Save Settings"
-                        Width="110"
-                        Click="SaveSettings_Click"/>
+                        Click="SaveSettings_Click" Margin="0,0,8,0"/>
+                                <Button Content="Save Progress"
+                        Click="SaveProgress_Click" Margin="0,0,8,0"/>
+                                <Button Content="Clear Thumbnail Cache"
+                        Click="ClearCache_Click" Margin="0,0,8,0"/>
+                                <Button Content="Import Photos/Videos"
+                        Click="ImportPhotos_Click" Margin="0,0,8,0"/>
+                                <Button Content="Bulk Delete Now"
+                        Click="BulkDeleteNow_Click" Margin="0,0,8,0"/>
+                                <Button Content="Logout" Click="Logout_Click"/>
                             </WrapPanel>
-
-                            <GroupBox Header="Tools" Margin="0,20,0,0">
-                                <StackPanel>
-                                    <Button Content="Bulk Delete Now"
-                          Click="BulkDeleteNow_Click"
-                          Margin="0,0,0,5"/>
-                                    <Button Content="Clear Thumbnail Cache"
-                          Click="ClearCache_Click"
-                          Margin="0,0,0,5"/>
-                                    <Button Content="Import Photos…"
-                          Click="ImportPhotos_Click"/>
-                                </StackPanel>
-                            </GroupBox>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>

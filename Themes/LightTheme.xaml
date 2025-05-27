@@ -1,7 +1,14 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <!-- Light brushes -->
-  <SolidColorBrush x:Key="WindowBackground"   Color="White"/>
-  <SolidColorBrush x:Key="ControlBackground"  Color="#F0F0F0"/>
-  <SolidColorBrush x:Key="ControlForeground"  Color="Black"/>
+	<!-- Light mode brushes -->
+	<SolidColorBrush x:Key="WindowBackground"  Color="White"/>
+	<SolidColorBrush x:Key="ControlBackground" Color="#F0F0F0"/>
+	<SolidColorBrush x:Key="ControlForeground" Color="Black"/>
+
+	<!-- TextBox styling in Light -->
+	<Style TargetType="TextBox">
+		<Setter Property="Background" Value="White"/>
+		<Setter Property="Foreground" Value="Black"/>
+		<Setter Property="BorderBrush" Value="#CCCCCC"/>
+	</Style>
 </ResourceDictionary>

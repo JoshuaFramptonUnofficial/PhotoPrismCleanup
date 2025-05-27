@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Renci.SshNet;
+using Renci.SshNet.Common;
 using Renci.SshNet.Sftp;
 
 namespace PhotoPrismCleanup
@@ -11,7 +12,7 @@ namespace PhotoPrismCleanup
         private readonly string _originalsFolder;
         private readonly string _thumbCacheFolder;
         private readonly string _importFolder;
-        private SftpClient _client;
+        private SftpClient? _client;
 
         public static readonly string[] ImageExts = {
             ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tif", ".tiff", ".heic"
@@ -20,43 +21,34 @@ namespace PhotoPrismCleanup
             ".mp4", ".mov", ".avi", ".mkv", ".wmv", ".flv", ".webm"
         };
 
-        // ✔️ Now accepts three folders: originals, thumbnails, and import
-        public PhotoPrismService(
-            string originalsFolder,
-            string thumbCacheFolder,
-            string importFolder)
+        public PhotoPrismService(string originalsFolder, string thumbCacheFolder, string importFolder)
         {
             _originalsFolder = originalsFolder;
             _thumbCacheFolder = thumbCacheFolder;
             _importFolder = importFolder;
         }
 
-        public void Connect(
-            string host,
-            int port,
-            string user,
-            string pwdOrKey,
-            bool useKey,
-            string keyPath)
+        public void Connect(string host, int port, string user,
+                            string pwdOrKey, bool useKey, string keyPath)
         {
-            if (_client?.IsConnected == true)
+            if (_client != null && _client.IsConnected)
                 Dispose();
 
-            AuthenticationMethod auth;
+            ConnectionInfo conn;
             if (useKey)
             {
-                // explicit if/else so both arms are AuthenticationMethod
                 var keyFile = string.IsNullOrEmpty(pwdOrKey)
                     ? new PrivateKeyFile(keyPath)
                     : new PrivateKeyFile(keyPath, pwdOrKey);
-                auth = new PrivateKeyAuthenticationMethod(user, keyFile);
+                conn = new ConnectionInfo(host, port, user,
+                           new PrivateKeyAuthenticationMethod(user, keyFile));
             }
             else
             {
-                auth = new PasswordAuthenticationMethod(user, pwdOrKey);
+                conn = new ConnectionInfo(host, port, user,
+                           new PasswordAuthenticationMethod(user, pwdOrKey));
             }
 
-            var conn = new ConnectionInfo(host, port, user, auth);
             _client = new SftpClient(conn);
             _client.Connect();
             _client.KeepAliveInterval = TimeSpan.FromMinutes(1);
@@ -73,13 +65,11 @@ namespace PhotoPrismCleanup
 
         private void Recurse(string path, List<string> outList)
         {
-            foreach (var entry in _client.ListDirectory(path))
+            foreach (var entry in _client!.ListDirectory(path))
             {
-                if (entry.Name == "." || entry.Name == "..") continue;
+                if (entry.Name is "." or "..") continue;
                 if (entry.IsDirectory)
-                {
                     Recurse(entry.FullName, outList);
-                }
                 else
                 {
                     var ext = Path.GetExtension(entry.Name).ToLowerInvariant();
@@ -95,14 +85,23 @@ namespace PhotoPrismCleanup
         public byte[] DownloadToMemory(string remotePath)
         {
             using var ms = new MemoryStream();
-            _client.DownloadFile(remotePath, ms);
+            _client!.DownloadFile(remotePath, ms);
             return ms.ToArray();
         }
 
         public void DownloadToFile(string remotePath, string localPath)
         {
             using var fs = File.OpenWrite(localPath);
-            _client.DownloadFile(remotePath, fs);
+            _client!.DownloadFile(remotePath, fs);
+        }
+
+        public string DownloadToTemp(string remotePath)
+        {
+            var ext = Path.GetExtension(remotePath);
+            var tmp = Path.Combine(Path.GetTempPath(), $"ppc_{Guid.NewGuid()}{ext}");
+            using var fs = File.OpenWrite(tmp);
+            _client!.DownloadFile(remotePath, fs);
+            return tmp;
         }
 
         public List<string> DeleteFiles(IEnumerable<string> paths)
@@ -110,7 +109,7 @@ namespace PhotoPrismCleanup
             var failed = new List<string>();
             foreach (var p in paths)
             {
-                try { _client.DeleteFile(p); }
+                try { _client!.DeleteFile(p); }
                 catch { failed.Add(p); }
             }
             return failed;
@@ -118,13 +117,16 @@ namespace PhotoPrismCleanup
 
         public void ClearThumbnailCache()
         {
+            if (_client == null || !_client.IsConnected)
+                throw new InvalidOperationException("Not connected.");
             RecurseDelete(_thumbCacheFolder);
         }
+
         private void RecurseDelete(string path)
         {
-            foreach (var entry in _client.ListDirectory(path))
+            foreach (var entry in _client!.ListDirectory(path))
             {
-                if (entry.Name == "." || entry.Name == "..") continue;
+                if (entry.Name is "." or "..") continue;
                 if (entry.IsDirectory)
                 {
                     RecurseDelete(entry.FullName);
@@ -139,16 +141,19 @@ namespace PhotoPrismCleanup
 
         public void ImportFiles(IEnumerable<string> localPaths)
         {
+            if (_client == null || !_client.IsConnected)
+                throw new InvalidOperationException("Not connected.");
+
             foreach (var local in localPaths)
             {
-                string fileName = Path.GetFileName(local);
-                string remote = _importFolder.TrimEnd('/') + "/" + fileName;
+                var fileName = Path.GetFileName(local);
+                var remote = _importFolder.TrimEnd('/') + "/" + fileName;
                 using var fs = File.OpenRead(local);
                 _client.UploadFile(fs, remote);
             }
         }
 
-        public void Disconnect()
+        public void Dispose()
         {
             if (_client != null)
             {
@@ -157,7 +162,5 @@ namespace PhotoPrismCleanup
                 _client = null;
             }
         }
-
-        public void Dispose() => Disconnect();
     }
 }

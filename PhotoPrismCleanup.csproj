@@ -3,16 +3,23 @@
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net8.0-windows</TargetFramework>
 		<UseWPF>true</UseWPF>
-		<UseWindowsForms>true</UseWindowsForms>
-		<!-- <- enables System.Windows.Forms -->
 		<Nullable>enable</Nullable>
+		<ApplicationIcon>Icons\logo.ico</ApplicationIcon>
 	</PropertyGroup>
+
 	<ItemGroup>
+		<!-- Official SSH.NET package from NuGet.org -->
 		<PackageReference Include="SSH.NET" Version="2020.0.1" />
 	</ItemGroup>
+
 	<ItemGroup>
 		<None Include="help.html">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<Resource Include="Icons\logo.ico">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Themes\LightTheme.xaml" />
+		<Resource Include="Themes\DarkTheme.xaml" />
 	</ItemGroup>
 </Project>
