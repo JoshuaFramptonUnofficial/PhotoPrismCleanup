@@ -8,7 +8,9 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Animation;
 
 namespace PhotoPrismCleanup
 {
@@ -21,12 +23,13 @@ namespace PhotoPrismCleanup
         private readonly List<string> _toDelete;
         private int _index;
         private string? _currentTempVideo;
+        private double _videoRotation = 0;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            // Load config and apply theme
+            // Load config + theme
             _cfg = ConfigService.Load();
             App.ApplyTheme(_cfg.Theme);
             ThemeBtn.Content = _cfg.Theme == ThemeMode.Dark ? "🌜" : "🌞";
@@ -41,8 +44,6 @@ namespace PhotoPrismCleanup
             FolderBox.Text = _cfg.RemoteFolder;
             ThumbCacheBox.Text = _cfg.ThumbCacheFolder;
             ImportFolderBox.Text = _cfg.ImportFolder;
-            ShowPhotosBox.IsChecked = _cfg.ShowPhotos;
-            ShowVideosBox.IsChecked = _cfg.ShowVideos;
 
             // Populate Settings tab
             SettingsFolderBox.Text = _cfg.RemoteFolder;
@@ -74,7 +75,7 @@ namespace PhotoPrismCleanup
         {
             try
             {
-                // Save Connect form to config
+                // Save login settings
                 _cfg.Host = HostBox.Text.Trim();
                 _cfg.Port = int.TryParse(PortBox.Text, out var p) ? p : 22;
                 _cfg.Username = UserBox.Text.Trim();
@@ -84,14 +85,12 @@ namespace PhotoPrismCleanup
                 _cfg.RemoteFolder = FolderBox.Text.Trim();
                 _cfg.ThumbCacheFolder = ThumbCacheBox.Text.Trim();
                 _cfg.ImportFolder = ImportFolderBox.Text.Trim();
-                _cfg.ShowPhotos = ShowPhotosBox.IsChecked == true;
-                _cfg.ShowVideos = ShowVideosBox.IsChecked == true;
                 ConfigService.Save(_cfg);
 
                 StatusText.Text = "Connecting…";
-                await Task.Run(() =>
-                    _svc.Connect(_cfg.Host, _cfg.Port, _cfg.Username,
-                                 _cfg.PasswordOrKey, _cfg.UseKey, _cfg.KeyPath));
+                await Task.Run(() => _svc.Connect(
+                    _cfg.Host, _cfg.Port, _cfg.Username,
+                    _cfg.PasswordOrKey, _cfg.UseKey, _cfg.KeyPath));
 
                 _allMedia = await Task.Run(() => _svc.ListAllMedia());
                 BuildFilteredList();
@@ -109,58 +108,37 @@ namespace PhotoPrismCleanup
             }
             catch (SocketException)
             {
-                MessageBox.Show("Cannot reach host. Check network/SSH settings.",
-                                "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Cannot reach host.", "Connection Error",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
                 StatusText.Text = "Not connected";
             }
             catch (SftpPathNotFoundException)
             {
-                MessageBox.Show("Remote folder not found. Check path.",
-                                "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Remote folder not found.", "Error",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
                 StatusText.Text = "Not connected";
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Connection failed:\n{ex.Message}",
-                                "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Connection failed:\n{ex.Message}", "Error",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
                 StatusText.Text = "Not connected";
             }
         }
 
-        private void DeleteBtn_Click(object sender, RoutedEventArgs e)
-        {
-            _ = DeleteCurrent();
-        }
-
-        private void KeepBtn_Click(object sender, RoutedEventArgs e)
-        {
-            _ = KeepCurrent();
-        }
-
-        private void UndoBtn_Click(object sender, RoutedEventArgs e)
-        {
-            _ = Undo();
-        }
+        private void DeleteBtn_Click(object sender, RoutedEventArgs e) => _ = DeleteCurrent();
+        private void UndoBtn_Click(object sender, RoutedEventArgs e) => _ = Undo();
+        private void KeepBtn_Click(object sender, RoutedEventArgs e) => _ = KeepCurrent();
+        private void RotateBtn_Click(object sender, RoutedEventArgs e) => RotateCurrentVideo();
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (MainTabs.Visibility != Visibility.Visible) return;
-
-            if (e.Key == Key.Left)
-            {
-                e.Handled = true;
-                _ = DeleteCurrent();
-            }
-            else if (e.Key == Key.Right)
-            {
-                e.Handled = true;
-                _ = KeepCurrent();
-            }
+            if (e.Key == Key.Left) { e.Handled = true; _ = DeleteCurrent(); }
             else if (e.Key == Key.Z || e.Key == Key.Down)
-            {
-                e.Handled = true;
-                _ = Undo();
-            }
+            { e.Handled = true; _ = Undo(); }
+            else if (e.Key == Key.Right) { e.Handled = true; _ = KeepCurrent(); }
+            else if (e.Key == Key.R) { e.Handled = true; RotateCurrentVideo(); }
         }
 
         private async Task DeleteCurrent()
@@ -176,11 +154,7 @@ namespace PhotoPrismCleanup
 
         private async Task Undo()
         {
-            if (_index <= 0)
-            {
-                System.Media.SystemSounds.Beep.Play();
-                return;
-            }
+            if (_index <= 0) { System.Media.SystemSounds.Beep.Play(); return; }
             _index--;
             _toDelete.Remove(_mediaList[_index]);
             _cfg.LastIndex = _index;
@@ -189,8 +163,18 @@ namespace PhotoPrismCleanup
             await ShowCurrentMedia();
         }
 
+        private void RotateCurrentVideo()
+        {
+            if (SwipeVideo.Visibility != Visibility.Visible) return;
+            _videoRotation = (_videoRotation + 90) % 360;
+            SwipeVideo.LayoutTransform = new RotateTransform(_videoRotation);
+        }
+
         private async Task NextItem()
         {
+            // make sure video stops
+            SwipeVideo.Stop();
+
             _cfg.LastIndex = ++_index;
             _cfg.PendingDeletes = new List<string>(_toDelete);
             ConfigService.Save(_cfg);
@@ -204,7 +188,6 @@ namespace PhotoPrismCleanup
                     _cfg.PendingDeletes.Clear();
                     _cfg.LastIndex = 0;
                     ConfigService.Save(_cfg);
-
                     _allMedia = await Task.Run(() => _svc.ListAllMedia());
                     BuildFilteredList();
                 }
@@ -218,24 +201,21 @@ namespace PhotoPrismCleanup
         {
             _mediaList = _allMedia
               .Where(p =>
-              {
-                  var ext = Path.GetExtension(p).ToLowerInvariant();
-                  return (_cfg.ShowPhotos && PhotoPrismService.ImageExts.Contains(ext))
-                      || (_cfg.ShowVideos && PhotoPrismService.VideoExts.Contains(ext));
-              })
-              .ToList();
+                (PhotoPrismService.ImageExts.Contains(Path.GetExtension(p).ToLower()) && _cfg.ShowPhotos)
+             || (PhotoPrismService.VideoExts.Contains(Path.GetExtension(p).ToLower()) && _cfg.ShowVideos)
+              ).ToList();
         }
 
         private async Task ShowCurrentMedia()
         {
+            SwipeVideo.Stop();
             LoadingOverlay.Visibility = Visibility.Visible;
             SwipeImage.Visibility = Visibility.Collapsed;
             SwipeVideo.Visibility = Visibility.Collapsed;
 
             if (_currentTempVideo != null)
             {
-                try { File.Delete(_currentTempVideo); }
-                catch { /* ignore */ }
+                try { File.Delete(_currentTempVideo); } catch { }
                 _currentTempVideo = null;
             }
 
@@ -264,6 +244,7 @@ namespace PhotoPrismCleanup
                     SwipeVideo.Source = new Uri(_currentTempVideo);
                     SwipeVideo.Visibility = Visibility.Visible;
                     SwipeVideo.Play();
+                    SwipeVideo.LayoutTransform = new RotateTransform(_videoRotation);
                 }
 
                 DeleteProgressBar.Visibility = Visibility.Visible;
@@ -311,7 +292,6 @@ namespace PhotoPrismCleanup
             ConfigService.Save(_cfg);
 
             MessageBox.Show("Settings saved.", "OK", MessageBoxButton.OK, MessageBoxImage.Information);
-
             BuildFilteredList();
             _index = Math.Min(_cfg.LastIndex, _mediaList.Count - 1);
             _ = ShowCurrentMedia();
@@ -321,7 +301,8 @@ namespace PhotoPrismCleanup
         {
             _cfg.PendingDeletes = new List<string>(_toDelete);
             ConfigService.Save(_cfg);
-            MessageBox.Show("Progress saved.", "OK", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Progress saved.",
+                            "OK", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void ClearCache_Click(object sender, RoutedEventArgs e)
@@ -329,11 +310,13 @@ namespace PhotoPrismCleanup
             try
             {
                 _svc.ClearThumbnailCache();
-                MessageBox.Show("Thumbnail cache cleared.", "OK", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Thumbnail cache cleared.",
+                                "OK", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to clear cache:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to clear cache:\n{ex.Message}",
+                                "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -356,7 +339,8 @@ namespace PhotoPrismCleanup
         {
             if (_toDelete.Count == 0)
             {
-                MessageBox.Show("No items marked for deletion.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("No items marked for deletion.",
+                                "Info", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
             var dlg = new SummaryWindow(_toDelete, _svc) { Owner = this };
@@ -372,7 +356,7 @@ namespace PhotoPrismCleanup
         private void Logout_Click(object sender, RoutedEventArgs e)
         {
             _svc.Dispose();
-            ConfigService.Save(new AppConfig());  // reset config
+            ConfigService.Save(new AppConfig());
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(
                 AppDomain.CurrentDomain.FriendlyName)
             { UseShellExecute = true });

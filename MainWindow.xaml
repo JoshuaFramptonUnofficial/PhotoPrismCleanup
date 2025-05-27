@@ -14,6 +14,7 @@
             <Setter Property="Height" Value="36"/>
             <Setter Property="FontSize" Value="16"/>
             <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{DynamicResource ControlForeground}"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Template">
@@ -27,15 +28,28 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <!-- Delete/Keep button styles -->
+
+        <!-- Delete / Keep / Undo / Rotate styles -->
         <Style x:Key="DeleteBtn" TargetType="Button">
             <Setter Property="Background" Value="Red"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Padding" Value="8,4"/>
             <Setter Property="Margin" Value="5"/>
         </Style>
+        <Style x:Key="UndoBtn" TargetType="Button">
+            <Setter Property="Background" Value="#FF999999"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
         <Style x:Key="KeepBtn" TargetType="Button">
             <Setter Property="Background" Value="Green"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+        <Style x:Key="RotateBtn" TargetType="Button">
+            <Setter Property="Background" Value="#FF4444FF"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Padding" Value="8,4"/>
             <Setter Property="Margin" Value="5"/>
@@ -47,19 +61,24 @@
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal"
                 Background="{DynamicResource ControlBackground}"
                 Height="40" VerticalAlignment="Center">
-            <Button x:Name="HelpBtn" Content="Help" Width="60" Margin="5"
+            <Button x:Name="HelpBtn"
+              Content="Help (H)"
+              Width="80"
               Click="HelpBtn_Click"/>
-            <Button x:Name="ThemeBtn" Style="{StaticResource ThemeBtnStyle}"
+            <Button x:Name="ThemeBtn"
+              Style="{StaticResource ThemeBtnStyle}"
               Click="ThemeBtn_Click"/>
         </StackPanel>
 
         <!-- Status bar -->
         <StatusBar DockPanel.Dock="Bottom"
                Background="{DynamicResource ControlBackground}">
-            <TextBlock x:Name="StatusText" Text="Not connected" Margin="5,0"/>
+            <TextBlock x:Name="StatusText"
+                 Text="Not connected"
+                 Margin="5,0"/>
         </StatusBar>
 
-        <!-- Overall swipe/Delete progress bar -->
+        <!-- Delete progress bar -->
         <ProgressBar x:Name="DeleteProgressBar"
                  DockPanel.Dock="Bottom"
                  Height="8"
@@ -72,7 +91,9 @@
             <!-- Connection form -->
             <Border x:Name="ConnectGrid"
               Background="{DynamicResource ControlBackground}"
-              CornerRadius="8" Padding="16" Margin="50">
+              CornerRadius="8"
+              Padding="16"
+              Margin="50">
                 <ScrollViewer>
                     <StackPanel>
                         <TextBlock Text="SSH Host:"/>
@@ -89,8 +110,7 @@
                         <TextBlock Text="Key Path:" Margin="0,8,0,0"/>
                         <StackPanel Orientation="Horizontal">
                             <TextBox x:Name="KeyBox" Width="300"/>
-                            <Button Content="Browse..." Margin="5,0,0,0"
-                      Click="BrowseKey_Click"/>
+                            <Button Content="Browse..." Margin="5,0,0,0" Click="BrowseKey_Click"/>
                         </StackPanel>
 
                         <TextBlock Text="Password:" Margin="0,8,0,0"/>
@@ -105,18 +125,18 @@
                         <TextBlock Text="Import Folder:" Margin="0,8,0,0"/>
                         <TextBox x:Name="ImportFolderBox"/>
 
-                        <CheckBox x:Name="ShowPhotosBox" Content="Show Photos" Margin="0,8,0,0"/>
-                        <CheckBox x:Name="ShowVideosBox" Content="Show Videos"/>
-
-                        <Button x:Name="ConnectBtn" Content="Connect"
-                    Margin="0,16,0,0" Height="30"
+                        <Button x:Name="ConnectBtn"
+                    Content="Connect (C)"
+                    Margin="0,16,0,0"
+                    Height="30"
                     Click="ConnectBtn_Click"/>
                     </StackPanel>
                 </ScrollViewer>
             </Border>
 
-            <!-- Main tabs (hidden until connected) -->
-            <TabControl x:Name="MainTabs" Visibility="Collapsed"
+            <!-- Main tabs -->
+            <TabControl x:Name="MainTabs"
+                  Visibility="Collapsed"
                   Background="{DynamicResource ControlBackground}">
                 <!-- REVIEW TAB -->
                 <TabItem Header="Review">
@@ -148,13 +168,24 @@
                             </Grid>
                         </Border>
 
-                        <!-- Swipe controls -->
+                        <!-- Controls: Delete ←, Undo Z/↓, Keep →, Rotate R -->
                         <WrapPanel Grid.Row="1" HorizontalAlignment="Center" Margin="10">
-                            <Button x:Name="DeleteBtn" Style="{StaticResource DeleteBtn}"
-                      Content="Delete" Click="DeleteBtn_Click"/>
-                            <Button x:Name="KeepBtn" Style="{StaticResource KeepBtn}"
-                      Content="Keep" Click="KeepBtn_Click"/>
-                            <Button x:Name="UndoBtn" Content="Undo" Click="UndoBtn_Click"/>
+                            <Button x:Name="DeleteBtn"
+                      Style="{StaticResource DeleteBtn}"
+                      Click="DeleteBtn_Click"
+                      Content="Delete (←)"/>
+                            <Button x:Name="UndoBtn"
+                      Style="{StaticResource UndoBtn}"
+                      Click="UndoBtn_Click"
+                      Content="Undo (Z/↓)"/>
+                            <Button x:Name="KeepBtn"
+                      Style="{StaticResource KeepBtn}"
+                      Click="KeepBtn_Click"
+                      Content="Keep (→)"/>
+                            <Button x:Name="RotateBtn"
+                      Style="{StaticResource RotateBtn}"
+                      Click="RotateBtn_Click"
+                      Content="Rotate (R)"/>
                         </WrapPanel>
                     </Grid>
                 </TabItem>
@@ -162,34 +193,36 @@
                 <!-- SETTINGS TAB -->
                 <TabItem Header="Settings">
                     <ScrollViewer>
+                        <!-- Removed invalid Foreground on StackPanel -->
                         <StackPanel Margin="10">
-                            <TextBlock Text="Remote Folder:"/>
-                            <TextBox x:Name="SettingsFolderBox"/>
+                            <GroupBox Header="Folders" Margin="0,0,0,10">
+                                <StackPanel Margin="5">
+                                    <TextBlock Text="Remote Folder:"/>
+                                    <TextBox x:Name="SettingsFolderBox"/>
+                                    <TextBlock Text="Thumbnail Cache Folder:" Margin="0,8,0,0"/>
+                                    <TextBox x:Name="SettingsThumbCacheBox"/>
+                                    <TextBlock Text="Import Folder:" Margin="0,8,0,0"/>
+                                    <TextBox x:Name="SettingsImportFolderBox"/>
+                                </StackPanel>
+                            </GroupBox>
 
-                            <TextBlock Text="Thumbnail Cache Folder:" Margin="0,8,0,0"/>
-                            <TextBox x:Name="SettingsThumbCacheBox"/>
+                            <GroupBox Header="Filters" Margin="0,0,0,10">
+                                <StackPanel Margin="5">
+                                    <CheckBox x:Name="SettingsShowPhotosBox" Content="Show Photos"/>
+                                    <CheckBox x:Name="SettingsShowVideosBox" Content="Show Videos"/>
+                                </StackPanel>
+                            </GroupBox>
 
-                            <TextBlock Text="Import Folder:" Margin="0,8,0,0"/>
-                            <TextBox x:Name="SettingsImportFolderBox"/>
-
-                            <CheckBox x:Name="SettingsShowPhotosBox"
-                        Content="Show Photos" Margin="0,8,0,0"/>
-                            <CheckBox x:Name="SettingsShowVideosBox"
-                        Content="Show Videos"/>
-
-                            <WrapPanel Margin="0,16,0,0">
-                                <Button Content="Save Settings"
-                        Click="SaveSettings_Click" Margin="0,0,8,0"/>
-                                <Button Content="Save Progress"
-                        Click="SaveProgress_Click" Margin="0,0,8,0"/>
-                                <Button Content="Clear Thumbnail Cache"
-                        Click="ClearCache_Click" Margin="0,0,8,0"/>
-                                <Button Content="Import Photos/Videos"
-                        Click="ImportPhotos_Click" Margin="0,0,8,0"/>
-                                <Button Content="Bulk Delete Now"
-                        Click="BulkDeleteNow_Click" Margin="0,0,8,0"/>
-                                <Button Content="Logout" Click="Logout_Click"/>
-                            </WrapPanel>
+                            <GroupBox Header="Actions">
+                                <WrapPanel Margin="5">
+                                    <Button Content="Save Settings" Click="SaveSettings_Click" Margin="0,0,8,0"/>
+                                    <Button Content="Save Progress" Click="SaveProgress_Click" Margin="0,0,8,0"/>
+                                    <Button Content="Clear Thumbnail Cache" Click="ClearCache_Click" Margin="0,0,8,0"/>
+                                    <Button Content="Import Photos/Videos" Click="ImportPhotos_Click" Margin="0,0,8,0"/>
+                                    <Button Content="Bulk Delete Now" Click="BulkDeleteNow_Click" Margin="0,0,8,0"/>
+                                    <Button Content="Logout" Click="Logout_Click"/>
+                                </WrapPanel>
+                            </GroupBox>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>
