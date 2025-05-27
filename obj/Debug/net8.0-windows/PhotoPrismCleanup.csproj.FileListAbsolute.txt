@@ -28,3 +28,5 @@ C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windo
 C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\PhotoPrismCleanup.pdb
 C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\PhotoPrismCleanup.genruntimeconfig.cache
 C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\ref\PhotoPrismCleanup.dll
+C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\ImportPreviewWindow.baml
+C:\Users\nerfw\Downloads\Photoprism App\PhotoPrismCleanup\obj\Debug\net8.0-windows\ImportPreviewWindow.g.cs

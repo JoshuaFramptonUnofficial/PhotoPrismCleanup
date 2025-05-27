@@ -1,0 +1,53 @@
+﻿<Window x:Class="PhotoPrismCleanup.ImportPreviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Confirm Import"
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterOwner">
+	<Grid Margin="10">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="200"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+
+		<TextBlock Text="These files will be imported:" FontWeight="Bold"/>
+
+		<ScrollViewer Grid.Row="1">
+			<ItemsControl x:Name="PreviewList">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<UniformGrid Columns="4"/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<Border BorderBrush="Gray" BorderThickness="1" Margin="4">
+							<Image Source="{Binding Thumb}"
+								   Width="100" Height="75"
+								   Stretch="Uniform"/>
+						</Border>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</ScrollViewer>
+
+		<StackPanel Grid.Row="2" Margin="0,10,0,0" Visibility="Collapsed"
+					x:Name="ProgressPanel">
+			<ProgressBar x:Name="ImportProgressBar" Height="20" Minimum="0"/>
+			<TextBlock x:Name="ProgressText"
+					   Text="0 / 0 transferred"
+					   HorizontalAlignment="Center"
+					   Margin="0,5,0,0"/>
+		</StackPanel>
+
+		<StackPanel Grid.Row="3" Orientation="Horizontal"
+					HorizontalAlignment="Right" Margin="0,10,0,0">
+			<Button x:Name="ConfirmBtn" Content="Confirm Import"
+					Width="120" Click="ConfirmBtn_Click" Margin="0,0,5,0"/>
+			<Button x:Name="CancelBtn" Content="Cancel"
+					Width="80" Click="CancelBtn_Click"/>
+		</StackPanel>
+	</Grid>
+</Window>
