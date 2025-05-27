@@ -8,8 +8,9 @@ namespace PhotoPrismCleanup
 {
     public class PhotoPrismService : IDisposable
     {
-        private readonly string _remoteFolder;
+        private readonly string _originalsFolder;
         private readonly string _thumbCacheFolder;
+        private readonly string _importFolder;
         private SftpClient _client;
 
         public static readonly string[] ImageExts = {
@@ -19,22 +20,41 @@ namespace PhotoPrismCleanup
             ".mp4", ".mov", ".avi", ".mkv", ".wmv", ".flv", ".webm"
         };
 
-        public PhotoPrismService(string remoteFolder, string thumbCacheFolder)
+        // ✔️ Now accepts three folders: originals, thumbnails, and import
+        public PhotoPrismService(
+            string originalsFolder,
+            string thumbCacheFolder,
+            string importFolder)
         {
-            _remoteFolder = remoteFolder;
+            _originalsFolder = originalsFolder;
             _thumbCacheFolder = thumbCacheFolder;
+            _importFolder = importFolder;
         }
 
-        public void Connect(string host, int port, string user, string pwdOrKey, bool useKey, string keyPath)
+        public void Connect(
+            string host,
+            int port,
+            string user,
+            string pwdOrKey,
+            bool useKey,
+            string keyPath)
         {
-            if (_client?.IsConnected == true) Dispose();
+            if (_client?.IsConnected == true)
+                Dispose();
 
-            AuthenticationMethod auth = useKey
-                ? new PrivateKeyAuthenticationMethod(user,
-                      string.IsNullOrEmpty(pwdOrKey)
-                        ? new PrivateKeyFile(keyPath)
-                        : new PrivateKeyFile(keyPath, pwdOrKey))
-                : new PasswordAuthenticationMethod(user, pwdOrKey);
+            AuthenticationMethod auth;
+            if (useKey)
+            {
+                // explicit if/else so both arms are AuthenticationMethod
+                var keyFile = string.IsNullOrEmpty(pwdOrKey)
+                    ? new PrivateKeyFile(keyPath)
+                    : new PrivateKeyFile(keyPath, pwdOrKey);
+                auth = new PrivateKeyAuthenticationMethod(user, keyFile);
+            }
+            else
+            {
+                auth = new PasswordAuthenticationMethod(user, pwdOrKey);
+            }
 
             var conn = new ConnectionInfo(host, port, user, auth);
             _client = new SftpClient(conn);
@@ -47,7 +67,7 @@ namespace PhotoPrismCleanup
             if (_client == null || !_client.IsConnected)
                 throw new InvalidOperationException("Not connected.");
             var files = new List<string>();
-            Recurse(_remoteFolder, files);
+            Recurse(_originalsFolder, files);
             return files;
         }
 
@@ -55,7 +75,6 @@ namespace PhotoPrismCleanup
         {
             foreach (var entry in _client.ListDirectory(path))
             {
-                // skip current and parent dirs
                 if (entry.Name == "." || entry.Name == "..") continue;
                 if (entry.IsDirectory)
                 {
@@ -63,7 +82,7 @@ namespace PhotoPrismCleanup
                 }
                 else
                 {
-                    string ext = Path.GetExtension(entry.Name).ToLowerInvariant();
+                    var ext = Path.GetExtension(entry.Name).ToLowerInvariant();
                     if (Array.Exists(ImageExts, e => e == ext) ||
                         Array.Exists(VideoExts, e => e == ext))
                     {
@@ -99,7 +118,6 @@ namespace PhotoPrismCleanup
 
         public void ClearThumbnailCache()
         {
-            // same skip-“..” fix here
             RecurseDelete(_thumbCacheFolder);
         }
         private void RecurseDelete(string path)
@@ -124,7 +142,7 @@ namespace PhotoPrismCleanup
             foreach (var local in localPaths)
             {
                 string fileName = Path.GetFileName(local);
-                string remote = _remoteFolder.TrimEnd('/') + "/" + fileName;
+                string remote = _importFolder.TrimEnd('/') + "/" + fileName;
                 using var fs = File.OpenRead(local);
                 _client.UploadFile(fs, remote);
             }

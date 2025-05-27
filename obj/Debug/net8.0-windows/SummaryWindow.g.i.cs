@@ -109,7 +109,7 @@ namespace PhotoPrismCleanup {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/PhotoPrismCleanup;V1.0.0.0;component/summarywindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/PhotoPrismCleanup;component/summarywindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\SummaryWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

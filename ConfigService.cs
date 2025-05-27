@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace PhotoPrismCleanup
 {
-    public enum ThemeMode { Light, Dark, System }
+    public enum ThemeMode { Light, Dark }
 
     public class AppConfig
     {
@@ -17,10 +17,13 @@ namespace PhotoPrismCleanup
         public string KeyPath { get; set; } = "";
         public string RemoteFolder { get; set; } = "/opt/photoprism/originals";
         public string ThumbCacheFolder { get; set; } = "/opt/photoprism/storage/cache/thumbnails";
+        public string ImportFolder { get; set; } = "/opt/photoprism/import";
         public bool ShowPhotos { get; set; } = true;
         public bool ShowVideos { get; set; } = true;
-        public ThemeMode Theme { get; set; } = ThemeMode.System;
+        public ThemeMode Theme { get; set; } = ThemeMode.Light;
         public int LastIndex { get; set; }
+        public System.Collections.Generic.List<string> PendingDeletes { get; set; }
+            = new System.Collections.Generic.List<string>();
     }
 
     public static class ConfigService
@@ -34,10 +37,12 @@ namespace PhotoPrismCleanup
         {
             try
             {
-                if (!Directory.Exists(ConfigDir)) Directory.CreateDirectory(ConfigDir);
+                if (!Directory.Exists(ConfigDir))
+                    Directory.CreateDirectory(ConfigDir);
+
                 if (File.Exists(ConfigFile))
                 {
-                    string json = File.ReadAllText(ConfigFile);
+                    var json = File.ReadAllText(ConfigFile);
                     return JsonSerializer.Deserialize<AppConfig>(json)
                            ?? new AppConfig();
                 }
@@ -45,7 +50,8 @@ namespace PhotoPrismCleanup
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to load config:\n{ex.Message}",
-                                "Config Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                "Config Error",
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return new AppConfig();
         }
@@ -54,15 +60,18 @@ namespace PhotoPrismCleanup
         {
             try
             {
-                if (!Directory.Exists(ConfigDir)) Directory.CreateDirectory(ConfigDir);
-                string json = JsonSerializer.Serialize(cfg,
-                    new JsonSerializerOptions { WriteIndented = true });
+                if (!Directory.Exists(ConfigDir))
+                    Directory.CreateDirectory(ConfigDir);
+
+                var opts = new JsonSerializerOptions { WriteIndented = true };
+                var json = JsonSerializer.Serialize(cfg, opts);
                 File.WriteAllText(ConfigFile, json);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to save config:\n{ex.Message}",
-                                "Config Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                "Config Error",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

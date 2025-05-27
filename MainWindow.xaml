@@ -6,82 +6,31 @@
         Background="{DynamicResource WindowBackground}"
         Foreground="{DynamicResource ControlForeground}"
         PreviewKeyDown="Window_PreviewKeyDown">
-
     <Window.Resources>
-        <!-- Easing for switch animation -->
-        <CubicEase x:Key="SwitchEase" EasingMode="EaseOut"/>
-
-        <!-- Sun/Moon Toggle style -->
-        <Style x:Key="SwitchToggleStyle" TargetType="ToggleButton">
-            <Setter Property="Width" Value="60"/>
-            <Setter Property="Height" Value="30"/>
+        <!-- Circular emoji button -->
+        <Style x:Key="ThemeBtnStyle" TargetType="Button">
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Margin" Value="5,8"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="ToggleButton">
-                        <Grid>
-                            <Border x:Name="Track" CornerRadius="15" Background="LightGray"/>
-                            <Border x:Name="Thumb"
-                      Width="26" Height="26" CornerRadius="13"
-                      Background="White" HorizontalAlignment="Left"
-                      RenderTransformOrigin="0.5,0.5">
-                                <Border.RenderTransform>
-                                    <TranslateTransform x:Name="ThumbTransform"/>
-                                </Border.RenderTransform>
-                                <ContentPresenter x:Name="IconPresenter"
-                                  HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"/>
-                            </Border>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Track" Property="Background" Value="#0047AB"/>
-                                <Setter TargetName="IconPresenter" Property="Content" Value="🌜"/>
-                                <Trigger.EnterActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="ThumbTransform"
-                                       Storyboard.TargetProperty="X"
-                                       To="30" Duration="0:0:0.3"
-                                       EasingFunction="{StaticResource SwitchEase}"/>
-                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ThumbTransform"
-                                                     Storyboard.TargetProperty="X"
-                                                     BeginTime="0:0:0.3">
-                                                <SplineDoubleKeyFrame KeyTime="0:0:0"  Value="33"/>
-                                                <SplineDoubleKeyFrame KeyTime="0:0:0.05" Value="27"/>
-                                                <SplineDoubleKeyFrame KeyTime="0:0:0.10" Value="30"/>
-                                            </DoubleAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.EnterActions>
-                            </Trigger>
-                            <Trigger Property="IsChecked" Value="False">
-                                <Setter TargetName="Track" Property="Background" Value="#FFA500"/>
-                                <Setter TargetName="IconPresenter" Property="Content" Value="🌞"/>
-                                <Trigger.EnterActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="ThumbTransform"
-                                       Storyboard.TargetProperty="X"
-                                       To="0" Duration="0:0:0.3"
-                                       EasingFunction="{StaticResource SwitchEase}"/>
-                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ThumbTransform"
-                                                     Storyboard.TargetProperty="X"
-                                                     BeginTime="0:0:0.3">
-                                                <SplineDoubleKeyFrame KeyTime="0:0:0"   Value="-3"/>
-                                                <SplineDoubleKeyFrame KeyTime="0:0:0.05" Value="3"/>
-                                                <SplineDoubleKeyFrame KeyTime="0:0:0.10" Value="0"/>
-                                            </DoubleAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.EnterActions>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="16"
+                    Background="{TemplateBinding Background}">
+                            <ContentPresenter 
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center"/>
+                        </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
 
-        <!-- Delete / Keep button styles -->
+        <!-- Delete / Keep buttons -->
         <Style x:Key="DeleteBtn" TargetType="Button">
             <Setter Property="Background" Value="Red"/>
             <Setter Property="Foreground" Value="White"/>
@@ -101,23 +50,25 @@
         <StackPanel DockPanel.Dock="Top"
                 Orientation="Horizontal"
                 Background="{DynamicResource ControlBackground}"
-                Height="32">
-            <Button x:Name="HelpBtn" Content="Help" Width="60" Margin="5,4"
+                Height="40"
+                VerticalAlignment="Center">
+            <Button x:Name="HelpBtn"
+              Content="Help"
+              Width="60"
+              Margin="5,8"
               Click="HelpBtn_Click"/>
-            <ToggleButton x:Name="ThemeToggle"
-                    Style="{StaticResource SwitchToggleStyle}"
-                    Margin="5,4"
-                    Checked="ThemeToggle_Checked"
-                    Unchecked="ThemeToggle_Unchecked"/>
+            <Button x:Name="ThemeBtn"
+              Style="{StaticResource ThemeBtnStyle}"
+              Click="ThemeBtn_Click"/>
         </StackPanel>
 
         <!-- Status bar -->
         <StatusBar DockPanel.Dock="Bottom"
                Background="{DynamicResource ControlBackground}">
-            <TextBlock x:Name="StatusText" Text="Not connected"/>
+            <TextBlock x:Name="StatusText"
+                 Text="Not connected"/>
         </StatusBar>
 
-        <!-- Main content -->
         <Grid>
             <!-- Connect panel -->
             <Border x:Name="ConnectGrid"
@@ -149,7 +100,8 @@
                     <TextBlock Text="Username:" Grid.Row="2" Grid.Column="0" Margin="0,4"/>
                     <TextBox x:Name="UserBox" Grid.Row="2" Grid.Column="1" Margin="5"/>
 
-                    <CheckBox x:Name="UseKeyBox" Content="Use Key Auth"
+                    <CheckBox x:Name="UseKeyBox"
+                    Content="Use Key Auth"
                     Grid.Row="3" Grid.Column="1" Margin="5"/>
 
                     <TextBlock Text="Key Path:" Grid.Row="4" Grid.Column="0" Margin="0,4"/>
@@ -158,16 +110,19 @@
                     <TextBlock Text="Password:" Grid.Row="5" Grid.Column="0" Margin="0,4"/>
                     <PasswordBox x:Name="PwdBox" Grid.Row="5" Grid.Column="1" Margin="5"/>
 
-                    <Button x:Name="ConnectBtn" Content="Connect"
-                  Grid.Row="6" Grid.ColumnSpan="2"
-                  Width="120" Margin="0,10,0,0"
+                    <Button x:Name="ConnectBtn"
+                  Content="Connect"
+                  Grid.Row="6"
+                  Grid.ColumnSpan="2"
+                  Width="120"
+                  Margin="0,10,0,0"
                   HorizontalAlignment="Center"
                   IsDefault="True"
                   Click="ConnectBtn_Click"/>
                 </Grid>
             </Border>
 
-            <!-- Review & Settings tabs -->
+            <!-- Review & Settings -->
             <TabControl x:Name="MainTabs"
                   Visibility="Collapsed"
                   Background="{DynamicResource ControlBackground}">
@@ -236,32 +191,39 @@
                     </Grid>
                 </TabItem>
 
-                <!-- Settings tab (with Tools group) -->
+                <!-- Settings tab -->
                 <TabItem Header="Settings">
                     <ScrollViewer>
                         <StackPanel Margin="10">
                             <TextBlock Text="Originals Folder:"/>
                             <TextBox x:Name="FolderBox" Margin="0,0,0,10"/>
+
                             <TextBlock Text="Thumbnail-Cache Folder:"/>
                             <TextBox x:Name="ThumbCacheBox" Margin="0,0,0,10"/>
+
+                            <TextBlock Text="Import Folder:"/>
+                            <TextBox x:Name="ImportFolderBox" Margin="0,0,0,10"/>
+
                             <TextBlock Text="Show Media Types:" FontWeight="Bold"
                          Margin="0,10,0,4"/>
-                            <CheckBox x:Name="ShowPhotosBox" Content="Photos"
+                            <CheckBox x:Name="ShowPhotosBox"
+                        Content="Photos"
                         Margin="0,0,0,4"/>
-                            <CheckBox x:Name="ShowVideosBox" Content="Videos"
+                            <CheckBox x:Name="ShowVideosBox"
+                        Content="Videos"
                         Margin="0,0,0,10"/>
 
                             <WrapPanel HorizontalAlignment="Right"
                         Margin="0,20,0,0">
                                 <Button Content="Save Progress"
-                        Width="110" Margin="0,0,5,0"
+                        Width="110"
+                        Margin="0,0,0,5"
                         Click="SaveProgress_Click"/>
                                 <Button Content="Save Settings"
                         Width="110"
                         Click="SaveSettings_Click"/>
                             </WrapPanel>
 
-                            <!-- Tools group -->
                             <GroupBox Header="Tools" Margin="0,20,0,0">
                                 <StackPanel>
                                     <Button Content="Bulk Delete Now"
