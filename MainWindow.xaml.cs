@@ -293,6 +293,13 @@ namespace PhotoPrismCleanup
 
             MessageBox.Show("Settings saved.", "OK", MessageBoxButton.OK, MessageBoxImage.Information);
             BuildFilteredList();
+            if (_mediaList.Count == 0)
+            {
+                MessageBox.Show("No media after applying filters.", "Empty",
+                                MessageBoxButton.OK, MessageBoxImage.Information);
+                _index = 0;
+                return;
+            }
             _index = Math.Min(_cfg.LastIndex, _mediaList.Count - 1);
             _ = ShowCurrentMedia();
         }
